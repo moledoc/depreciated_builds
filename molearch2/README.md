@@ -1,5 +1,5 @@
 
-# Current ArchLinux build (some todo's exist); currently not in active use!
+# Second ArchLinux build (some todo's exist); currently not in active use!
 
 ### Some notes about the config/dotfiles
 	
