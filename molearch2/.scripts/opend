@@ -1,0 +1,20 @@
+#!/bin/zsh
+
+# Script to open dir using fzf.
+# Additional, give $1 as a starting path, 
+# default is $HOME (ie when $1 is empty).
+# Eg. use with floating_app script.
+
+# DEPENDENCIES: 
+# * fzf, rg, fd
+# * env variables for different program types.
+
+# $1 is directory. If it's empty, $HOME is used.
+
+exclude=".git|.mozilla|.cache|.npm|.cargo|.ghc|.stack|.local|.pki|.pylint.d|ipython|.jupyter" 
+
+# +i is case insensitive
+open=$(fd --hidden --type d . $1 | rg -v $exclude | fzf +i)
+
+echo "$open"
+cd "$open"

@@ -1,0 +1,5 @@
+#!/bin/zsh
+# Script to spawn a new terminal window
+# and use floating_apps script to run an application 
+# in a floating terminal window
+$TERM -e floating_apps $1

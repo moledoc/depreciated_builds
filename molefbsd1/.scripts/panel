@@ -1,0 +1,56 @@
+#!/usr/local/bin/zsh
+
+
+pipe="/tmp/panel_fifo"
+#font="-misc-hermit-medium-r-normal-*-*-*-*-*-*-*-*-*"
+font1="-monotype-noto sans mono-medium-r-normal-*-*-95-*-*-*-*-*-*"
+#font2="-adobe-source code pro-medium-r-*-*-*-*-*-*-*-*-*-*"
+font2="-misc-monoid-medium-r-*-*-*-85-*-*-*-*-*-*"
+height=20
+
+trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
+
+# Delete and make fifo
+rm -f $pipe
+mkfifo $pipe
+
+# Date/time
+while true;
+  do
+    echo 'd'$(date +"%Y-%m-%d %H:%M");
+  sleep 60;
+done > "$pipe" &
+
+# Volume
+#while true;
+#  do
+#    echo 'v' $(mixer vol | awk '{print $7}' | cut -d ":" -f1);
+#    #echo 'v' $(mixer vol | cut -d ' ' -f13);
+#  sleep 5; # in case the volume is changed without the volumne script and keybinding
+#done > "$pipe" &
+echo 'v'$(mixer vol | awk '{print $7}' | cut -d ":" -f1) > "$pipe" &
+
+# Brightness
+echo 'l'$(doas sysctl hw.acpi.video.lcd0.brightness | awk '{print $2}') > "$pipe" &
+
+# Battery
+while true;
+  do
+    echo 'b'$(apm | grep 'Remaining battery life' | head -n 1 | awk '{print $4}' | tr -d ' ');
+  sleep 60;
+done > "$pipe" &
+
+
+# WiFi
+while true;
+  do
+	  echo 'w'$(ifconfig wlan0 | grep ssid | cut -d ' ' -f2);
+  sleep 20;
+done > "$pipe" &
+
+
+bspc config top_padding $height
+bspc control --subscribe > $pipe &
+cat $pipe | panel_bar | lemonbar -a 15 -g x$height -F "#fabd2f" -B "#282828" -U "#b8bb26" -u 2 -n 'panel' -f $font1 -f $font2 | $SHELL # & 
+wait
+

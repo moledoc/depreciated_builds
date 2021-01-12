@@ -1,0 +1,30 @@
+#!/usr/local/bin/zsh
+
+pipe="/tmp/panel_fifo"
+
+# Expected parameters to $1 are '+','-' or 'mute'
+# Expected parameters to $2 is 'scroll'
+
+change=5
+if [[ "$2" = "scroll" ]]
+then
+	change=2
+fi
+
+current_volume=$(mixer vol | awk '{print $7}' | cut -d ':' -f1)
+
+if [[ "$1" = "mute" ]] && [[ $current_volume -gt 0 ]]
+then 
+	mixer vol off
+	new_volume=0
+elif [[ "$1" = "mute" ]] && [[ $current_volume -eq 0 ]]
+then
+	mixer vol 50
+	new_volume=50
+else
+	new_volume=$(expr $current_volume $1 $change)
+	mixer vol $new_volume
+fi
+
+#echo 'v'$(mixer vol | awk '{print $7}' | cut -d ":" -f1) > $pipe &
+echo 'v'$new_volume > $pipe &

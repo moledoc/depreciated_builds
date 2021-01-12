@@ -1,0 +1,7 @@
+#!/bin/sh
+# Script to play music (tracks are shuffled).
+# Is meant to use inside a file manager, such as nnn.
+# Idea is to open new terminal,
+# so that one can continue using nnn for other activities.
+
+$TERMINAL_EXEC mpv --shuffle $1 &

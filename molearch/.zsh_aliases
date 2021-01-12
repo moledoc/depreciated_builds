@@ -1,0 +1,178 @@
+#######################
+# Self defined aliases
+
+# Shortcuts for commands.
+## Run update and upgrade.
+## These environmental variables are defined in .zsh_env.
+alias update=$UPDATE 
+
+## Uninstall a program
+alias uninstall=$UNINSTALL 
+
+## Make sudo apt install shorter.
+alias install=$INSTALL 
+
+## look what packages you have for <program>
+alias package=$PACKAGE 
+
+## Give vim alias to nvim.
+#alias vim="nvim"
+
+## Use tvim script, when opening vim
+alias vim="tvim"
+
+## Firefox in private mode.
+alias pf="firefox --private-window &"
+
+## screen in UTF-8
+alias screen="screen -U"
+
+## Remove detached screens
+alias cleanscreen="screen -ls | tail -n +2 | head -n -1 | awk '{print $1}' | xargs -I {} screen -S {} -X quit"
+
+## Easier to move back.
+alias b="cd .."
+
+## Show all dir content
+alias la="ls -a"
+
+## Show long dir content
+alias ll="ls -lh"
+
+## Show all long dir content
+alias lal="ls -alh"
+
+## Show what was copied
+alias cp="cp --verbose"
+
+## Colored ls
+## in one column
+alias ls="ls -1 --color=auto"
+
+## Path to working directory
+alias pwd='echo $PWD'
+
+# Use R console as calculator
+alias calc='R'
+
+## Shortcut to see free space in computer
+alias free="df -h"
+
+## See how big is the a folder
+alias size="du -h"
+
+# How many files in folder 
+alias count="ls | wc -l"
+alias counta="ls -a | wc -l"
+
+## Easier to clear terminal.
+alias clr="clear"
+
+## Update fzf (fuzzy finder)
+alias fzf_upd="cd ~/.fzf && git pull && ./install"
+
+# Shortcuts to applications
+## Shortcut for terminal emails
+#alias email="neomutt"
+
+## Shortcut for keepassxc
+alias pswd="keepassxc"
+
+## Shortcut for weather (can specify the city, default is defined by locale)
+#alias weather="curl wttr.in"
+
+## Shortcut for RSS reader (newsboat)
+alias rss="newsboat"
+
+## Shortcuts for transmission-cli
+alias trmd="transmission-daemon"
+alias trm="transmission-remote"
+alias trma="transmission-remote -a '$(sselp)'"
+alias trml="transmission-remote -l"
+
+## wget and curl the link in clipboard
+alias wgetc="sh ~/.scripts/get -w"
+alias curlc="curl \"$(sselp)\""
+
+## Play mpv shuffled on a folder.
+## Meant for listening music
+alias mpvs="mpv --shuffle"
+
+# Shortcuts to directories
+## Shortcuts to masters files
+
+### MoleArch
+alias mole="cd ~/Documents/MoleArch"
+
+### University
+alias uni="cd ~/Documents/University/Masters"
+alias uni1="cd ~/Documents/University/Masters/I_semester"
+alias uni2="cd ~/Documents/University/Masters/II_semester"
+
+### Basic directories
+alias dl="cd ~/Downloads"
+alias doc="cd ~/Documents"
+#alias pic="cd ~/Pictures"
+alias music="cd ~/Music"
+alias videos="cd ~/Videos"
+alias later="cd ~/Downloads/Watch_later"
+
+### Other directories
+alias tst="cd ~/Documents/Testing"
+alias proj="cd ~/Documents/Projects"
+alias roll="cd ~/Documents/Rolling_files"
+
+alias suckless="cd ~/.suckless"
+
+# Shortcuts for config/rc files.
+alias cfz="vim ~/.zshrc"
+alias cfza="vim ~/.zsh_aliases"
+alias cfv="vim ~/.vimrc"
+
+alias cfsx="vim ~/.config/sxhkd/sxhkdrc"
+alias cfb="vim ~/.config/bspwm/bspwmrc"
+alias cfp="vim ~/.config/bspwm/panel"
+
+alias config="cd ~/.config"
+alias scripts="cd ~/.scripts"
+
+# Shortcut to source .zshrc
+alias srcz="source ~/.zshrc"
+
+# Shortcut to source .zsh_env
+alias srce="source ~/.zsh_env"
+
+# Shortcut to source .zprofile
+alias srcp="source ~/.zprofile"
+
+# Shortcuts for scripts
+## Open chosen manual through dmenu and zathura
+alias manuals="sh ~/.scripts/manuals"
+
+## Shutdown/reboot script
+alias sd="sh ~/.scripts/shutdown"
+alias rb="sh ~/.scripts/reboot"
+
+## Getting key mappings script using xev.
+alias keys="sh ~/.scripts/keys"
+
+## Open pdf in zathura.
+### The r stands for recursive, meaning one can open pdf-s in the subfolders aswell.
+alias zpdf="sh ~/.scripts/zpdf"
+alias zpdfr="sh ~/.scripts/zpdfR"
+
+## Current directory
+alias cur=". ~/.scripts/current"
+
+## Download videos/music using youtube-dl
+alias dl_vid="sh ~/.scripts/dl_videos"
+alias dl_music="sh ~/.scripts/dl_music"
+
+## Select video to watch
+alias mvid="sh ~/.scripts/mvid"
+alias mvidr="sh ~/.scripts/mvidR"
+
+## Shortcut to open new terminal in the same path.
+alias o="sh ~/.scripts/new_cur_term"
+
+

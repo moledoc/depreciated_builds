@@ -1,0 +1,106 @@
+#!/bin/sh
+
+# Written by: Meelis Utt
+# moleBSD setup script
+# Installs necessary and wanted packages and sets up some files and directories.
+
+usr=$(whoami)
+doas_exists=$(pkg info doas)
+
+if [ -z $doas_exists ] && [ "$usr" = "root" ]
+then 
+	echo "----Init update pkg/ports tree and doas----"
+	pkg update
+	portsnap fetch extract #update ports tree
+	pkg install doas
+	echo "permit nopass utt" >> /usr/local/etc/doas.conf
+	# add acpi_video module when booting.
+	# also set brightness to 50 few logging in.
+	echo 'acpi_video_load="YES"' >> /boot/loader.conf
+	echo 'hw.acpi/video.lcd0.economy=50' >> /etc/sysctl.conf
+	echo 'hw.acpi/video.lcd0.fullpower=50' >> /etc/sysctl.conf
+	# Switch user, thet is to be set up.
+	echo "What user do you want to set up?"
+	read who
+	su $who
+fi
+
+# Install git, neovim, zsh
+echo "----Necessary programs----"
+echo "Installing git, neovim, zsh"
+doas pkg install git neovim zsh zsh-syntax-highlighting xorg
+
+# Change shell to zsh
+echo "----Change shell----"
+chsh -s zsh
+
+# git global config
+echo "----Git config----"
+echo "Insert git --global user.name: " varUsername
+git config --global user.name "$varUsername"
+echo "Insert git --global user.email: " varEmail
+git config --global user.email "$varEmail"
+
+# Install VimPlug: vim pluggin manager
+echo "----VimPlug setup----"
+echo "Make $HOME/.config/nvim/plugged directory for VimPlug"
+mkdir -p $HOME/.config/nvim/plugged
+echo "Installing VimPlug"
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+# Install other programs
+echo "----Installing other programs----"
+echo "CURRENTLY COMMENTED OUT"
+#doas pkg install \
+#	bspwm \ # Window manager
+#	sxhkd \ # Hotkey daemon
+#	lemonbar \ # Panel
+#	dmenu \ # Extensible application launcher
+#	firefox \ # Browser
+#	psearch \ # Ables searching port tree efficiently
+#	fzf \ # Fuzzy file finder
+#	redshift \ # Decrease blue light in screen
+#	mpv \ # Media player
+#	zathura \ # Document viewer
+#	zathura-ps \ # Postscript viewer
+#	zathura-pdf-mupdf \ # Document viewer pdf extension
+#	zathura-pdf-poppler \ # Document viewer pdf extension
+#	scrot \ # Screenshot
+#	sxiv \ # Simple X image viewer
+#	nitrogen \ # Wallpaper
+#	htop \ # Process manager
+#	neofetch \ # Bling -- shows system info
+#	thunderbird \ # Email client
+#	R-cran-cli \ # CLI R
+#	RStudio \ # GUI R
+#	python \
+#	#py<py_ver>-pip-<pip_version> \ # Downloading python libraries
+#	keepassxc \ # Password manager
+#	texlive-full \ # TeX
+#	#noto \# Fonts
+#	hermit \# Fonts
+#	monoid \# Fonts
+#	roboto \# Fonts
+#	sourcecodepro \# Fonts
+#	#nerd-fonts \ #Fonts with emoji support(?)
+#	xfontsel \ # Tool to get font names
+#	youtube-dl \ # Download youtube videos
+#	transmission\ # Torrenting
+#	wifimgr \ # GUI wifi manager
+
+# Pull dotfiles from git to $HOME
+echo "----Pulling conf/dotfiles----"
+cd
+git clone https://meelis_utt@bitbucket.org/meelis_utt/molebsd.git
+# rm git repo from $HOME
+doas rm -r .git
+
+# Clone molebsd repo to documents, so that we can use update_repo script to keep repo up-to-date
+echo "Making directory $HOME/Documents"
+mkdir $HOME/Documents
+cd $HOME/Documents
+git clone https://meelis_utt@bitbucket.org/meelis_utt/molebsd.git
+
+
+

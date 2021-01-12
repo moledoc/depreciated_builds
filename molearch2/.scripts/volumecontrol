@@ -1,0 +1,34 @@
+#!/bin/zsh
+
+pipe="/tmp/panel_fifo"
+
+# Expected parameters to $1 are '+','-' or 'mute'
+# Expected parameters to $2 is 'scroll'
+
+change=2
+if [[ "$2" = "scroll" ]]
+then
+	change=2
+fi
+
+#current_volume=$(amixer get Master | grep "Mono:" )
+##
+#if [[ "$1" = "mute" ]]
+#then 
+#	amixer set Master toggle
+#	new_volume=$(amixer get Master | grep "Mono:" )
+#else
+#	new_volume=$(expr $current_volume $1 $change)
+#	amixer set Master $new_volume
+#fi
+
+if [[ "$1" = "mute" ]]
+then 
+	amixer -q set Master toggle
+else
+	amixer -q set Master $change$1
+fi
+
+
+volume_info=$(amixer get Master | grep "Mono:" )
+echo $pipe_vol$volume_info > $pipe &

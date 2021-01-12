@@ -1,0 +1,7 @@
+#!/bin/sh
+# Use dmenu to read manuals in pdf's.
+# Somehow some man pages are not shown in man -k .
+# If full manpage name is written out and passed to std,
+# then the manpage will/should appear.
+
+man -k . | dmenu -i -l 10 -fn "Hermit-Regular" -nb '#282828' -nf '#fabd2f' -sb '#b8bb26' -sf '#000000' | awk '{print $1}' | cut -d '(' -f1 | xargs -r man -tpdf | zathura - &

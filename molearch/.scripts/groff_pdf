@@ -1,0 +1,4 @@
+#!/bin/sh
+# Make groff_ms document into a pdf.
+
+groff -e $1.ms -ms -Tpdf > $1.pdf

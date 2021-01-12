@@ -1,0 +1,8 @@
+#!/bin/sh
+# bspc command to make focused node flaoting and sticky.
+# Also resize, lock (bspc --close does not work)
+# and keep the window 'above' others.
+# Idea is to run this script inside nnn.
+
+CURRENT_NODE=$(bspc query -N -n focused)
+bspc node $CURRENT_NODE -g sticky=on -g locked=on --state floating --resize right -250 0 --layer above

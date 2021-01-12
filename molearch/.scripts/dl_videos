@@ -1,0 +1,4 @@
+#!/bin/sh
+# Download videos using youtube-dl.
+# This script downloads the video of the given URL ($1).
+youtube-dl -f 22 -i $(sselp)

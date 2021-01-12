@@ -1,0 +1,17 @@
+#!/usr/local/bin/zsh
+
+pipe="/tmp/panel_fifo"
+
+# Expected parameters to $1 are '+' and '-'
+change=10
+current_brightness=$(doas sysctl hw.acpi.video.lcd0.brightness | awk '{print $2}')
+new_brightness=$(expr $current_brightness $1 $change )
+if [[ "$new_brightness" -gt "100" ]]
+then
+	new_brightness=100
+elif [[ "$new_brightness" -lt "20" ]]
+then
+	new_brightness=20
+fi
+doas sysctl hw.acpi.video.lcd0.brightness=$new_brightness
+echo 'l'$new_brightness > $pipe &

@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+$TERM -e ${$(fd . /bin | fzf +i)##*/}

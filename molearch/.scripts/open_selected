@@ -1,0 +1,57 @@
+#!/bin/sh
+# Open given file with default tool.
+
+# Let's make ranges for programs
+# nr 				type 				program
+# --------------------------------------------------------------------------------
+# 0 				text documents 			$EDITOR
+# 1 				pdf,epub			$PDF_VIEWER
+# 2 				mp3,mp4,webm,flac,mkv		$MEDIA
+# 3				jpeg,jpg,png,raw		$IMAGES
+
+full_path=$(readlink -f $1)
+
+#NAME=$(echo "$1" | sed 's/\.[^.]*$//')
+#EXT=$(echo "$1" | sed 's/^[^\.]*\.//')
+
+# The following is more efficient.
+NAME=${1%%\.*}
+EXT=${1##*\.}
+
+pdf='pdf,epub' 
+media='mp3,mp4,webm,flac,mkv'
+image='jpeg,jpg,png,raw' 
+music='Music'
+videos='Videos'
+watch_later='Watch_later'
+
+echo -e "$pdf 1\n$media 2\n$music 2\n$videos 2\n$watch_later 2\n$image 3" > /tmp/open_selected_script
+
+#NR=$(grep $EXT /tmp/open_selected_script | awk '{print $2}')
+grep_result=$(grep $EXT /tmp/open_selected_script)
+NR=${grep_result##* }
+
+
+# If NR is empty, then lets check if Music,Videos,Watch_later is in the path.
+# If yes, then use the $MEDIA program to open it.
+if [ "$NR" == "" ]
+then
+	echo "$full_path 2" > /tmp/open_selected_script
+	#NR=$(grep "$music\|$videos\|$watch_later" /tmp/open_selected_script | awk '{print $2}')
+	grep_result=$(grep $EXT /tmp/open_selected_script)
+	NR=${grep_result##* }
+fi
+
+if [ "$NR" == "1" ]
+then
+	$PDF_VIEWER "$1" &
+elif [ "$NR" == "2" ]
+then
+	$TERMINAL_EXEC $MEDIA "$1" &
+elif [ "$NR" == "3" ]
+then
+	$IMAGES "$1" &
+else
+	$TERMINAL_EXEC tvim "$1" &
+fi
+rm /tmp/open_*

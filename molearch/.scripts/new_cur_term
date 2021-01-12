@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Open new terminal in the current path
+cd $PWD | $TERMINAL &

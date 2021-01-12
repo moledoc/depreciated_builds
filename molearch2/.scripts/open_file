@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+# Script to open file using fzf.
+# Additional, give $1 as a starting path, 
+# default is $HOME (ie when $1 is empty).
+# Eg. use with floating_app script.
+
+# DEPENDENCIES: fzf
+
+cd $1
+
+# +i is case insensitive
+find . | grep -v "\.git\|\.mozilla\|\.cache" | fzf +i | xargs -I {} $EDITOR "{}"

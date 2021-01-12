@@ -1,0 +1,4 @@
+#!/bin/sh
+# Use fzf and run selected pdf in zathura
+
+ls | grep '[\.]pdf' | fzf | xargs -I {} zathura "{}" &

@@ -1,0 +1,337 @@
+#!/bin/sh
+
+# Written by: Meelis Utt
+# moleARCH setup script/documentation
+# Installs necessary and wanted packages and sets up some files and directories.
+
+# Dependencies: access to the Internet
+
+
+if [[ "$1" = "init" ]]
+then
+	#INTSTALLATION
+	
+	# Ensure system clock is accurate
+	timedatectl set-ntp true
+	
+	# Partition the disk manually.
+	fdisk /dev/sda
+	
+	# d - delete
+	# n - new
+	# w - write
+	# exit
+	
+	echo "Did you set up swap partition? [y/n]"
+	read is_swap
+	
+	mkfs.ext4 /dev/sda1
+	mount /dev/sda1 /mnt
+	
+	if [[ "$is_swap" = "y" ]]
+	then
+		mkswap /dev/sda2
+		swapon /dev/sda2
+	fi
+	
+	# Install some necessary packages.
+	pacstrap /mnt base base-devel linux linux-firmware neovim man-db man-pages grub git
+	
+	# generate fstab
+	genfstab -U /mnt >> /mnt/etc/fstab
+	
+	# Change into new system
+	arch-chroot /mnt
+	
+	# set root password
+	passwd
+	
+	# set timezone
+	echo "Select timezone region and city."
+	echo "Region: "
+	read region
+	echo "City: "
+	read city
+	ln -sf /usr/share/zoneinfo/$region/$city /etc/localtime
+	
+	# to generate /etc/adjtime
+	hwclock --systohc
+	
+	# Set locales
+	echo "Set locales"
+	nvim /etc/local.gen
+	
+	# Generate locales
+	locale-gen
+	
+	# Set lang variable
+	echo "LANG=en_US.UTF-8" >> /etc/local.conf
+	
+	# Network configuration
+	echo "moleARCH" >> /etc/hostname
+	echo "127.0.0.1	localhost" >> /etc/hosts
+	echo "::1	localhost" >> /etc/hosts
+	echo "127.0.0.1	moleARCH.localdomain moleARCH" >> /etc/hosts
+	
+	
+	# Install network manager
+	pacman -S iputils networkmanager
+	systemctl enable NetworkManager
+	
+	# setup grub
+	grub-install --target=i386-pc /dev/sda
+	grub-mkconfig -o /boot/grub/grub.cfg
+
+	# Exit chroot and reboot
+	exit
+	reboot
+fi
+
+# If the script was given parameter init, then the script should not pass this point.
+######################################################################################
+
+# Dependencies: the Internet, logged in as root.
+
+# To connect to a wifi
+## nmcli device wifi list - to see available connections
+## nmcli device -a wifi connect <SSID>
+# Test connection
+## ping eg. archlinux.org
+
+# update packages
+pacman -Syyu
+
+# Select 10 fastest mirrors from the mirrorlist.
+pacman -S pacman-contrib # contains bash script /usr/bin/rankmirrors
+pacman -S pacman-mirrorlist # arch mirror list available in this package
+cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+sed -i 's/^#Server/Server/g' /etc/pacman.d/mirrorlist.backup
+#rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+rankmirrors /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+
+# Install other necessary programs
+pacman -S alsa-utils #acpi acpid
+
+# Find the necessary video driver
+# lspci | grep "VGA"
+pacman -S xf86-video-intel
+
+# Install zsh and set up new user
+pacman -S zsh zsh-syntax-highlighting
+echo "Select new username: "
+read user
+useradd -s /bin/zsh -m -g wheel $user
+# shell can be changed with 
+## chsh -s
+echo "New users password: "
+passwd $user
+
+# Switch user and install doas as sudo replacement
+su $user
+mkdir $HOME/Documents
+cd $HOME/Documents
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -sirc
+exit 
+# Add new user to doas conf.
+mkdir /usr/etc
+echo "permit nopass $user" >> /usr/etc/doas.conf
+
+# Setup the user
+su $user
+
+# git global config
+echo "----Git config----"
+echo "Insert git --global user.name: " varUsername
+git config --global user.name "$varUsername"
+echo "Insert git --global user.email: " varEmail
+git config --global user.email "$varEmail"
+
+# Installing xorg and xterm
+echo "----Xorg----"
+doas pacman -S xorg xterm xorg-server xorg-xinit xorg-xfontsel xorg-xlsfonts xclip xsel
+
+
+# Install VimPlug: vim pluggin manager
+echo "----VimPlug setup----"
+echo "Make $HOME/.config/nvim/plugged directory for VimPlug"
+mkdir -p $HOME/.config/nvim/plugged
+echo "Installing VimPlug"
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+# Install other programs
+echo "----Installing other programs----"
+echo "CURRENTLY COMMENTED OUT"
+#doas -- pacman -S \
+#	bspwm \ # Window manager
+#	sxhkd \ # Hotkey daemon
+#	dmenu \ # Extensible application launcher # or ROFI ??
+#	firefox \ # Browser
+#	libnotify \# notify-send
+#	notification-daemon \ # self-explanitory
+#	fzf \ # Fuzzy file finder
+#	ripgrep \ # faster grep, also vim-fzf integration
+#	fd \ # faster find, also for using with vim-fzf
+#	redshift \ # Decrease blue light in screen
+#	mpv \ # Media player
+#	zathura \ # Document viewer
+#	zathura-pdf-mupdf \ # Document viewer pdf extension
+#	scrot \ # Screenshot
+#	sxiv \ # Simple X image viewer
+#	nitrogen \ # Wallpaper
+#	htop \ # Process manager
+#	neofetch \ # Bling -- shows system info
+#	thunderbird \ # Email client
+#	keepassxc \ # Password manager
+#	noto-fonts \# Font
+#	oft-hermit \# Font
+#	awesome-termial-fonts \ # Font for icons
+#	#roboto \# Fonts
+#	#sourcecodepro \# Fonts
+#	#monoid \# Fonts
+#	#nerd-fonts \ #Fonts with emoji support(?)
+#	#youtube-dl \ # Download youtube videos
+#	#transmission-cli\ # Torrenting
+# 	stalonetray \ # for nm-applet (wifi, when nmcli too difficult)
+#	network-manager-applet \ # nm-applet
+#	fuse \ # For AppImage -- dygma keyboard
+#	zip \
+#	unzip \
+#	openssh \
+#	screen \ # run virtual tty.
+#	wget \
+#	#ripcord \ # discord(/slack) client
+#	signal-desktop \ # ok instant message client
+
+# Panel with xft font support
+yay -S lemonbar-xft-git 
+# yay -S udunits # for some r packages (might be needed, just note to self)
+
+# Window swallowing
+cd $HOME/Documents && git clone https://github.com/salman-abedin/devour.git && cd devour && doas -- make install
+
+# Install programs for coding
+# doas -- pacman -S \
+#   r \ # CLI R
+#   RStudio \ # GUI R
+#   python3 \
+#   python2 \
+#   python-pip \
+#   #py<py_ver>-pip-<pip_version> \ # Downloading python libraries
+#   stack \ # Haskell tool stack
+#   ghc \ # Haskell compiler
+#   cabal-install \ # system for building and packaging Haskell libraries and programs
+#   haskell-cassava \ # csv parsing and encoding library
+#   haskell-haddock-library \ # doc-gen tool for hs libs
+#   jupyter \ #A language-agnostic web-based interactive shell/notebook server.
+#   tk \ windowsing tool
+#   texlive-core \ # TeX
+#   #texlive-lang \ # TeX
+#   texlive-most \ # TeX
+#   biber \#
+#   pandoc \ #
+#   pandoc-citeproc \#
+#   	nodejs \ # for vim coc plugin
+#   docker
+#   docker-compose
+#   postgresql \
+#   maxima \ # algebra calculator
+#   gcc \ # C/C++ compiler
+#   clang \ # C/C++ compiler
+#   ccls \ #C/C++/ObjC language server supporting cross references, hierarchies, completion and semantic highlighting
+#   redis \ # in memory key-valu db
+#   glu \ # necessary for some R packages
+#   cargo \ # rust package manager(?); some R packages use this.
+#   geos \ # cpp port for the Java Topology Suite # some R package needs this.
+#   protobuf \# protocol buffers - google dat ainterchage format # some R package needs this
+#   gcc-fortran \ # some R package needs this
+#   gdal \ # some R package needs this
+#   open-office \# to open .doc
+#   scala \
+
+
+
+#   pip install numpy pandas mpi4py pynvim jedi psycopg2 redis pandasql neo4j
+#   pynvim and jedi for coc; mpi4py for parallel programming; psycopg2 py package for postgresql; redis for redis; pandasql is sql w/ pandas;
+#   To upgrade a python package.
+#p  ython3 -m pip install --upgrade pynvim
+#   (if pip install fails for mpi4py) doas -- pacman -S python-mpi4py
+#   doas -- pacman -S python-ipdb (cli multi process debugger)
+
+# yay -S \
+#   mongodb-bin \ # pre-compiled mongodb binary. # needed to do(manually load gpg key): gpg --keyserver pool.sks-keyservers.net --recv-keys 27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2; see https://wiki.archlinux.org/index.php/Makepkg#Signature_checking
+# qdigidoc4 \ #digidoc
+# mpich
+
+# Installing neo4j -- follow instructions: https://neo4j.com/download-thanks/?edition=community&release=4.1.3&flavour=unix
+
+# haskell package install in stack ghci
+# stack install <library> # split cassava
+# stack install normaldistribution
+
+## Pull dotfiles from git to $HOME
+#echo "----Pulling conf/dotfiles----"
+#cd
+##git clone https://meelis_utt@bitbucket.org/meelis_utt/molebsd.git
+## rm git repo from $HOME
+##doas rm -r .git
+#
+## Clone molebsd repo to documents, so that we can use update_repo script to keep repo up-to-date
+#echo "Making directory $HOME/Documents"
+#mkdir $HOME/Documents
+#cd $HOME/Documents
+#git clone https://meelis_utt@bitbucket.org/meelis_utt/molebsd.git
+
+
+## Fonts
+# To add installed fonts to eg xlsfonts,xfontsel, run
+#	$ xset fp+ /usr/share/fonts/<font dir>
+#	$ xset fp rehash
+# To remove font from the list, run
+#	$ xset fp- /usr/share/fonts/<font dir>
+#	$ xset fp rehash
+# Update font cache list
+#	$ fc-cache
+
+xset fp+ /usr/share/fonts/OTF # hermit-fonts
+xset fp rehash
+
+## Install Node.js for nvim-coc
+#curl -sL install-node.now.sh/lts > node_tmp
+# if zsh is used, change /bin/bash to /bin/zsh
+# chmod +x node_tmp
+# doas ./node_tmp
+# rm node_tmp
+
+
+## Problem with alsa sound:
+### Check which sound card should be used, in alsamixer for example.
+### The solution for running build (in Dell latitude eE7240) was
+# echo 'options snd-hda-intel index="1,0"' > doas -- tee /etc/modprobe.d/alsa-base.conf
+
+# TODO: test this
+#How to send email on cmdline:
+#sendmail user@example.com < email.txt
+
+###########################
+# Add ssh access to github.
+
+# generate ssh keys
+#	$ ssh-keygen -t rsa -b 4096 -C "<github user email>"
+# (save the key to eg $HOME/.ssh/github_key).
+# Add ssh key to  ssh-agent. First start the ssh-agent in the background
+#	$ eval "$(ssh-agent -s)"
+#	$ ssh-add $HOME/.ssh/github_key
+# Copy the public key to ssh key area in github
+# xclip -sel clip < $HOME/.ssh/github_key.pub
+# Setting remot to ssh instead of https
+#	$ git remote add git@github.com:USERNAME/REPOSITORY.git
+# Switching remote URLs from https to ssh.
+#	git remote -v (see available origins)
+#	git remote set-url origin git@github.com:USERNAME/REPOSITORY.git
+
+
+# ignore packes on update
+# doas -- nvim /etc/pacman.conf --> uncomment "IgnorePkg =" and add packages that are wanted to be ignored.

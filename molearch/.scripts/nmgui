@@ -1,0 +1,7 @@
+#!/bin/sh
+# mainly to connect to eduroam. It's a semi gui way to connet to a wifi.
+# Dependencies: stalonetray, network-manager-applet
+
+nm-applet --no-agent   2>&1 > /dev/null &
+stalonetray  2>&1 > /dev/null
+killall nm-applet

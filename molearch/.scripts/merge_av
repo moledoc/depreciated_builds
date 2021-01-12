@@ -1,0 +1,14 @@
+#!/bin/sh
+# script to merge audio and video.
+# No re-encoding on audio.
+# Video must not contain audio.
+VIDEO=$1
+AUDIO=$2
+#[[ -n $3 ]] && OUT=$3 || OUT=out.mkv
+if [ -n $3 ]
+then 
+	OUT=$3
+else 
+	OUT=out.mkv
+fi
+ffmpeg -i $VIDEO -i $AUDIO -c copy $OUT

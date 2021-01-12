@@ -1,0 +1,23 @@
+#!/bin/sh
+# Script for unmounting drives.
+# The default is $HOME/Documents/Mounts.
+# If there is ever need to umount from anywhere else, 
+# then the path to the unmountpoint can be typed out.
+
+EXCLUDE="\(/boot\|/home\|/\)$"
+
+UNMOUNT=$(lsblk -lp | grep "part /" | grep -v "$EXCLUDE" | awk '{print $1,$4,$7}' | dmenu -l 3 -i -p "Select drive to unmount:" | awk '{print $3}') 
+# When user didn't select any drive, exit.
+if [ -z $UNMOUNT ]
+then 
+	exit
+fi
+echo "Unmounting from $UNMOUNT."
+sudo umount $UNMOUNT && notify-send "Unmounting from $UNMOUNT."  
+if [ $UNMOUNT != "$HOME/Documents/Mounts" ]
+then 
+	echo "Deleting directory $UNMOUNT"
+	rm -r $UNMOUNT
+fi
+
+lsblk

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Script to copy template to the given filename,
+# if template exists.
+#TODO: improve script
+
+#TYPE=$(echo $1 | sed 's/[^.]*\.//')
+
+# The following is more efficient.
+TYPE=${1##*\.}
+TEMPLATE=$(ls ~/Templates | grep "$TYPE")
+cp ~/Templates/$TEMPLATE $1

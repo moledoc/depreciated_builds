@@ -1,0 +1,3 @@
+#!/bin/sh
+# Script that allows through dmenu to select video from (sub) folders, that one wants to watch.
+find $PWD -type f | grep .mp4 | dmenu -i -l 15 | xargs -I {} mpv "{}"

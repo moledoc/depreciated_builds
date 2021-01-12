@@ -1,0 +1,12 @@
+#!/usr/local/bin/zsh
+
+# README: Update the current build to set git repo directory.
+
+repo=$HOME/Documents/molefbsd
+
+cp -RL $HOME/.config/zsh $repo/.config
+cp -RL $HOME/.config/openbox $repo/.config
+cp -RL $HOME/.config/tint2 $repo/.config
+cp -RL $HOME/.scripts $repo/
+
+cp $HOME/.setup.sh $HOME/.xinitrc $HOME/.Xresources $HOME/.zprofile $HOME/.zshrc $HOME/README.md $HOME/.xbindkeysrc $repo

@@ -1,0 +1,7 @@
+#!/bin/sh
+# Script to back up to a external hard drive.
+# Backed up files are defined here
+
+sudo cp -ruf ~/.scripts ~/.config/expenses ~/.config/bspwm ~/.config/sxhkd ~/Music ~/Videos ~/Templates ~/Documents/Rolling_files ~/Documents/MoleArch ~/Documents/Projects/C++ ~/Documents/Projects/Expenses ~/Documents/ISOs ~/Documents/springer_quarantine_books $1 --verbose
+
+sudo cp -uf ~/.zsh_env ~/.zprofile ~/.zsh_aliases ~/.zshrc ~/.vimrc $1 --verbose

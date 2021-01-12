@@ -1,0 +1,65 @@
+#!/usr/local/bin/zsh
+
+sep="%{F#b8bb26}|%{F-}"
+
+# Center
+terminal="$sep%{+u}%{A:$TERM &:}$TERM%{A}%{-u}"
+browser="$sep%{+u}%{A:$BROWSER &:}web%{A}%{-u}$sep"
+
+# Left
+launcher="$sep%{+u}%{A:dmenu_run -fn 'Hermit-Regular' -nb '#282828' -nf '#fabd2f' -sb '#b8bb26' -sf '#000000':}run%{A}%{-u}$sep"
+#manuals="%{+u}%{A:$HOME/.scripts/manuals:}man%{A}%{-u}$sep"
+#help="%{+u}%{A:$HOME/.scripts/help:}help%{A}%{-u}$sep"
+#configs="%{+u}%{A:$HOME/.scripts/configs:}cf%{A}%{-u}$sep"
+#htop="%{+u}%{A:$TERM -e $HOME/.scripts/floating_apps:}htop%{A}%{-u}$sep"
+
+while read -r line; do
+	case $line in
+
+		d*)
+			datetime="$sep%{+u}${line#?}%{-u}"
+			;;
+		v*)
+			volume="$sep%{+u}%{A3:. $HOME/.scripts/volumecontrol mute:}%{A4:. $HOME/.scripts/volumecontrol + scroll:}%{A5:. $HOME/.scripts/volumecontrol - scroll:}v${line#?}%{A}%{A}%{A}%{-u}"
+			;;
+		b*)
+			battery="$sep%{+u}${line#?}%%{-u}"
+			;;
+		w*)
+			wifi="$sep%{+u}%{A:wifimgr:}${line#?}%{A}%{-u}"
+			;;
+		l*)
+			brightness="$sep%{+u}%{A4:. $HOME/.scripts/brightnesscontrol +:}%{A5:. $HOME/.scripts/brightnesscontrol -:}b${line#?}%{A}%{A}%{-u}"
+			;;
+		W*)
+			wm_infos=""
+			IFS=':'
+			set -- ${line#?}
+			while [ $# -gt 0 ] ; do
+			  item=$1
+			  name=${item#?}
+			  case $item in
+			    O*)
+			  	# focused occupied desktop
+			  	wm_infos="${wm_infos}$sep${name}"
+			  	;;
+			    F*)
+			  	# focused free desktop
+			  	wm_infos="${wm_infos}$sep${name}"
+			  	;;
+			    o*)
+			  	# occupied desktop
+			  	wm_infos="${wm_infos}%{A:bspc desktop -f ${name}:}$sep${name}"
+			  	;;
+			    f*)
+			  	# free desktop
+			  	wm_infos="${wm_infos}%{A:bspc desktop -f ${name}:}$sep${name}"
+			  	;;
+			  esac
+			  shift
+			done
+			;;
+	esac
+	#$echo "%{l}${wm_infos}${launcher}${manuals}${help}${configs}${htop}%{c}${terminal}${browser}%{r}${wifi}${volume}${battery}${datetime}$sep"
+	echo "%{l}${wm_infos}${launcher}%{c}${terminal}${browser}%{r}${volume}${brightness}${wifi}${battery}${datetime}$sep"
+done

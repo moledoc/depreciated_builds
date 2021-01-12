@@ -1,0 +1,62 @@
+#!/bin/zsh
+
+
+pipe="/tmp/panel_fifo"
+cur_redshift="/tmp/cur_redshift"
+font1="Hermit-Regular" # Text
+font2="FontAwesome-Regular" # Icons; check https://fontawesome.com/
+height=25
+
+trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
+
+# Delete and make fifo
+rm -f $pipe
+mkfifo $pipe
+
+# Date/time
+while true;
+  do
+    echo 'date'$(date +"%Y-%m-%d %H:%M");
+  sleep 60;
+done > "$pipe" &
+
+# Volume
+echo 'vol'$(amixer get Master | grep "Mono:") > $pipe &
+
+# Brightness
+echo 'light'$(expr $(< /sys/class/backlight/intel_backlight/brightness) \* 100 \/ $max_brightness ) > "$pipe" &
+
+# Redshift
+# not the best solution, but it'll do for now.
+# redshift_val=$(redshift -p | grep "Color temperature:" | awk '{print $3}' | cut -d 'K' -f1)
+redshift_val=3500
+echo $redshift_val > $cur_redshift
+echo 'rs'$( expr $redshift_val \/ 100 ) > "$pipe" &
+
+# Battery
+while true;
+  do
+	echo 'bat'$(< /sys/class/power_supply/BAT0/capacity);
+  sleep 30;
+done > "$pipe" &
+
+
+# WiFi
+while true;
+  do
+	conn=$(nmcli device | grep --word-regexp 'connected' | wc -l)
+	if [[ $conn -ge 1 ]]
+	then
+		echo "www\uf1eb" # wifi up icon
+	else
+		echo "www\uf00d" # times icon (since wifi down was not free)
+	fi
+	#echo 'w'$conn
+  sleep 5;
+done > "$pipe" &
+
+bspc config top_padding $height
+bspc subscribe report > "$pipe" &
+cat $pipe | panel_bar | lemonbar -a 50 -g x$height -F "#fabd2f" -B "#282828" -U "#b8bb26" -u 2 -n 'panel' -f $font1 -f $font2 | $SHELL # & 
+wait
+

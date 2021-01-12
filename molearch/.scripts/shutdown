@@ -1,0 +1,8 @@
+#!/bin/sh
+# Use dmenu to shudown computer.
+# Gives a dmenu prompt labeled with $1 to perform command $2.
+
+# Example:
+# ./prompt "Do you want to shut down?" "shutdown -h now"
+
+[ $(echo -e "No\nYes" | dmenu -i -p "Do you want to shutdown?") = "Yes" ] && shutdown now

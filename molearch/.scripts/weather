@@ -1,0 +1,6 @@
+#!/bin/sh
+# Curl weather from wttr.in and give option to give city as a parameter.
+# Default is defined by system locale.
+
+FROM="wttr.in/$1"
+curl $FROM

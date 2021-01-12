@@ -1,0 +1,8 @@
+#!/bin/sh
+# Script to print out the (sxhkd) keybindings.
+
+BINDINGS=$HOME/.config/sxhkd/sxhkdrc
+
+bspc node -t floating
+less $BINDINGS
+

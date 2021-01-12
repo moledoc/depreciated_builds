@@ -1,0 +1,24 @@
+#!/bin/zsh
+
+pipe="/tmp/panel_fifo"
+
+# Expected parameters to $1 are '+' and '-'
+# for my dell latitude e7240 the min=0 and max=935
+change=$(expr $(expr $max_brightness - $min_brightness) \/ 40)
+current_brightness=$(< /sys/class/backlight/intel_backlight/brightness)
+new_brightness=$(expr $current_brightness $1 $change )
+if [[ "$new_brightness" -ge "$max_brightness" ]]
+then
+	new_brightness=$max_brightness
+elif [[ "$new_brightness" -le "$min_brightness" ]]
+then
+	new_brightness=$(expr $min_brightness + $change)
+fi
+
+# Change the brightness
+echo $new_brightness | doas -- tee /sys/class/backlight/intel_backlight/brightness 
+
+# Calculate the brightness in 100th scale 
+# and pass it to the fifo for the panel
+new_brightness=$(expr $(< /sys/class/backlight/intel_backlight/brightness) \* 100 \/ $max_brightness)
+echo $pipe_light$new_brightness > $pipe &

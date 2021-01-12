@@ -1,0 +1,137 @@
+#!/bin/zsh
+
+internal="eDP1"
+external="HDMI1"
+
+sep="%{F#b8bb26}|%{F-}"
+padding=" "
+
+# Center
+terminal="$sep%{+u}%{A:$TERM &:}\uf120%{A}%{-u}" # terminal icon
+browser="$sep%{+u}%{A:$BROWSER &:}\uf0ac%{A}%{-u}$sep" # globe icon
+open_file="$sep%{+u}%{A:$HOME/.scripts/floating_terminal_apps $HOME/.scripts/openf &:}\uf15b%{A}%{-u}" # file icon
+passwd="$sep%{+u}%{A:keepassxc &:}\uf084%{A}%{-u}" # key icon
+
+# Left
+#launcher="$sep%{+u}%{A:dmenu_run -fn 'Hermit-Regular' -nb '#282828' -nf '#fabd2f' -sb '#b8bb26' -sf '#000000':}run%{A}%{-u}$sep"
+#manuals="%{+u}%{A:$HOME/.scripts/manuals:}man%{A}%{-u}$sep"
+#help="%{+u}%{A:$HOME/.scripts/help:}help%{A}%{-u}$sep"
+#configs="%{+u}%{A:$HOME/.scripts/configs:}cf%{A}%{-u}$sep"
+
+while read -r line; do
+	case $line in
+		date*)
+			datetime="$sep%{+u}${line#????}%{-u}"
+			;;
+		vol*)
+			vol_on=$(echo ${line#???} | cut -d ' ' -f8)
+			vol=$(echo ${line#???} | awk '{print $4}' | sed 's/\[\|\]\|%//g')
+			
+			if [[ "$vol_on" = "[off]" ]]
+			then
+				vol="%{F#cc241d}\uf026$vol%{F-}" # vol off icon
+			else
+				vol="\uf028$vol" # vol on icon
+			fi
+			volume="$sep%{+u}%{A:$HOME/.scripts/floating_terminal_apps alsamixer &:}%{A3:. $HOME/.scripts/volumecontrol mute &:}%{A4:. $HOME/.scripts/volumecontrol + scroll &:}%{A5:. $HOME/.scripts/volumecontrol - scroll &:}$vol%{A}%{A}%{A}%{A}%{-u}"
+			;;
+		bat*)
+			bat="${line#???}"
+			bat_status="$(< /sys/class/power_supply/BAT0/status)"
+			col=""
+			if [[ "$bat_status" = "Charging" ]]
+			then
+				col="%{F#458588}"
+			fi
+			if [[ $bat -gt 75 ]]
+			then
+				bat="$col\uf240%{F-}" # battery full icon
+			elif [[ $bat -gt 50 ]]
+			then
+				bat="$col\uf241%{F-}" # battery three quarters icon
+			elif [[ $bat -gt 25 ]]
+			then
+				bat="$col\uf242%{F-}" # battery half icon
+			elif [[ $bat -gt 10 ]]
+			then
+				bat="%{F#cc241d}$col\uf243%{F-}" # battery quarter icon
+			elif [[ $bat -le 10 ]]
+			then
+				bat="%{F#cc241d}$col\uf244%{F-}" # battery empty icon
+			fi
+
+			battery="$sep%{+u}%{A:notify-send 'Battery status' '${line#???}% $bat_status' &:}$bat%{A}%{-u}"
+			;;
+		www*)
+			conn=${line#???}
+			wifi="$sep%{+u}%{A:notify-send -u critical -t 3000 'Connections' '$(echo $(nmcli device | grep --word-regexp 'connected'))' &:}%{A3:$HOME/.scripts/floating_terminal_apps nmtui &:}$(echo $conn)%{A}%{A}%{-u}"
+			;;
+		light*)
+			brightness="$sep%{+u}%{A4:. $HOME/.scripts/brightnesscontrol + &:}%{A5:. $HOME/.scripts/brightnesscontrol - &:}\uf0eb${line#?????}%{A}%{A}%{-u}" 
+			# lightbulb icon
+			;;
+		rs*)
+			redshift="$sep%{+u}%{A3:. $HOME/.scripts/redshiftcontrol = &:}%{A4:. $HOME/.scripts/redshiftcontrol + &:}%{A5:. $HOME/.scripts/redshiftcontrol - &:}\uf042${line#??}%{A}%{A}%{A}%{-u}"
+			# adjust icon
+			;;
+		W*)
+			wm_info=""
+			set -- ${line#?}
+			line="${line#?}:"
+			while [[ $# -gt 0 ]]
+			do
+				section=${line%%:*}
+        if [[ "${section#?}" == "eDP1" ]]
+        then
+          wm_info1="$wm_info"
+          wm_info=""
+        fi
+        clicable_area="%{A:bspc desktop -f ${section#?}.'local':}${section#?}%{A}"
+				case $section in
+          # M*)
+						# wm_info="$wm_info$padding|${section#?}|"
+						# ;;
+          # m*)
+						# wm_info="$wm_info$padding|${section#?}|"
+						# ;;
+					O*)
+						wm_info="$wm_info$padding%{R}${clicable_area}%{R}"
+						;;
+					o*)
+						wm_info="$wm_info$padding%{+u}${clicable_area}%{-u}"
+						;;
+					F*)
+						wm_info="$wm_info$padding%{R}${clicable_area}%{R}"
+						;;
+					f*)
+						wm_info="$wm_info$padding${clicable_area}"
+						;;
+          U*)
+						wm_info="$wm_info$padding%{R}${clicable_area}%{R}"
+						;;
+          u*)
+            wm_info="$wm_info$padding%{F#cc241d}${clicable_area}%{F-}"
+            ;;
+					#*)
+					#	wm_info="$wm_info ${section#?}"
+					#	;;
+				esac
+				line=${line#*:}
+				set -- ${line#?}
+			done
+      wm_info2="$wm_info"
+			;;
+	esac
+	#$echo "%{l}${wm_infos}${launcher}${manuals}${help}${configs}${htop}%{c}${terminal}${browser}%{r}${wifi}${volume}${battery}${datetime}$sep"
+
+  rside="%{r}${volume}${brightness}${redshift}${wifi}${battery}${datetime}$sep"
+  cside="%{c}${passwd}${open_file}${terminal}${browser}"
+  # rside="%{r}$volume$brightness$redshift$wifi$battery$datetime$sep"
+  # cside="%{c}$passwd$open_file$terminal$browser"
+
+  m1="%{S0}%{l}$wm_info1$cside$rside"
+  m2="%{S1}%{l}$wm_info2$cside$rside" # "%{S1}%{l}${wm_info2}" # $cside$rside"
+  mFinal="$m1$m2"
+
+	echo -e "$mFinal"
+done

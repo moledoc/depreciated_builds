@@ -1,0 +1,16 @@
+#!/bin/zsh
+
+# Script to copy the files to git repo,
+# so that my home directory is not going to get cluttered
+# and it is easier to do 'git status' and such.
+
+cp -r ~/.config/bspwm ~/.config/sxhkd ~/.config/zsh ~/.config/X ~/Documents/molearch2/.config
+cp -r ~/.scripts ~/Documents/molearch2/
+cp ~/.config/nvim/init.vim ~/.config/nvim/coc-settings.json ~/Documents/molearch2/.config/nvim/
+
+cp ~/.xinitrc ~/.zprofile ~/.zshrc ~/Documents/molearch2/
+
+#cp -r ~/.mozilla ~/Documents/molearch2/
+
+cp ~/README.md ~/Documents/molearch2/
+cp -r ~/Templates ~/Documents/molearch2/

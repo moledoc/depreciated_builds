@@ -1,0 +1,227 @@
+
+# 	###################
+# 	pkg,ports,poudriere
+### Some aliases are just for documenting some commands,
+### even though there is the man pages.
+
+## Run update and upgrade.
+alias update_poudriere="doas -- poudriere jail -u -j 121Ramd64; doas -- poudriere ports -u -p HEAD" # Change jail and ports tree name accordingly!
+
+alias bulk="doas -- poudriere bulk -j 121Ramd64 -p HEAD -f" #user need to give the filename
+
+## Uninstall a program
+alias uninstall="doas -- pkg delete"
+alias dryrun="doas -- pkg delete --dry-run"
+
+## Install a program
+#alias install="doas -- pkg install -r poudriere"
+alias install="doas -- pkg install"
+
+## look what packages you have for <program> 
+## or info about particular program
+alias info="pkg info"
+
+## count packages
+alias count_pkg="pkg info -a | wc -l"
+
+## Search a program with pkg.
+alias search="pkg search"
+
+## upgrade packages
+alias upgrade="doas -- pkg upgrade"
+
+## update repository metadata
+alias update="doas -- pkg update -f"
+
+## Audit the package
+alias audit="doas -- pkg audit -F"
+
+## Remove unused packages
+alias autoremove="doas -- pkg autoremove"
+
+## Removing stale/outdated packages/binaries
+alias pkg_clean="doas -- pkg clean"
+alias pkg_cleana="doas -- pkg clean -a"
+
+
+#	#################
+#	Moving/Navigating
+
+## Current directory
+alias cur=". ~/.scripts/current"
+
+## Easier to move back.
+alias b="cd .."
+
+## Colored ls in one column
+alias ls="ls -1F  --color=\"always\""
+
+## Show all dir content
+alias la="ls -a"
+
+## Show long dir content
+alias ll="ls -lh"
+
+## Show all long dir content
+alias lal="ls -alh"
+
+## Show what was copied
+alias cp="cp -v"
+
+## Show what was moved
+alias mv="mv -v"
+## Colored grep
+#alias grep="grep --color=always"
+alias grep="rg --color=always"
+
+## Easier to clear terminal
+alias c="clear"
+
+##	#################
+##	See specific dirs
+
+
+alias moledoc="$EDITOR $HOME/README.md"
+alias repo="cd $HOME/Documents/molefbsd"
+
+alias ports="cd /usr/ports"
+
+alias dl="cd $HOME/Downloads"
+alias doc="cd $HOME/Documents"
+#alias pic="cd $HOME/Pictures"
+alias music="cd $HOME/Music"
+alias videos="cd $HOME/Videos"
+#alias later="cd $HOME/Downloads/Watch_later"
+#alias tst="cd $HOME/Documents/Testing"
+#alias proj="cd $HOME/Documents/Projects"
+#alias roll="cd $HOME/Documents/Rolling_files"
+alias config="cd $HOME/.config"
+alias scripts="cd $HOME/.scripts"
+
+
+#	##############
+#	Config related
+
+## Shortcuts for editing config files.
+alias cfz="$EDITOR $HOME/.zshrc"
+alias cfa="$EDITOR $HOME/.config/zsh/.zaliases"
+alias cfe="$EDITOR $HOME/.config/zsh/.zshenv"
+alias cfp="$EDITOR $HOME/.zprofile"
+alias cfv="$EDITOR $HOME/.config/nvim/init.vim"
+alias cfx="$EDITOR $HOME/.config/X/.Xresources"
+
+#alias cfsx="$EDITOR $HOME/.config/sxhkd/sxhkdrc"
+#alias cfb="$EDITOR $HOME/.config/bspwm/bspwmrc"
+#alias cfp="$EDITOR $HOME/.config/bspwm/panel"
+
+# Shortcut for sourcing config files.
+alias srcz="source $HOME/.zshrc"
+alias srca="source $HOME/.config/zsh/.zaliases"
+alias srce="source $HOME/.config/zsh/.zshenv"
+alias srcp="source $HOME/.zprofile"
+alias srcv="source $HOME/.config/nvim/init.vim"
+alias srcx="xrdb -merge $HOME/.config/X/.Xresources;xrdb -load $HOME/.config/X/.Xresources"
+
+
+#	######
+#	Status
+
+alias sd="doas -- shutdown -p now"
+alias rb="doas -- reboot"
+#alias sleep=""
+
+## This is not shorter, but is more memorable.
+alias battery="apm"
+
+## Connected to network.
+#alias ping="ping freebsd.org"
+
+## How many files in folder.
+alias count="ls | wc -l"
+alias counta="ls -a | wc -l"
+
+## Shortcut to see free space in computer.
+alias free="df -h"
+
+## Show directory and subdir sizes.
+alias size="du -h"
+
+
+#	########
+#	Programs
+
+## Firefox in private mode.
+alias pf="$BROWSER"
+
+## Use R console as calculator
+alias calc='R'
+
+## Shortcut for keepassxc
+alias pswd="keepassxc"
+
+## Shortcut for terminal emails
+#alias email="neomutt"
+
+## Shortcut for RSS reader (newsboat)
+alias rss="newsboat"
+
+### Shortcuts for transmission-cli
+alias trmd="transmission-daemon"
+alias trm="transmission-remote"
+#alias trma="transmission-remote -a '$(sselp)'"
+alias trml="transmission-remote -l"
+
+## Meant for listening music
+alias mpvs="mpv --shuffle"
+
+## screen in UTF-8
+#alias screen="screen -U"
+
+## Remove detached screens
+#alias cleanscreen="screen -ls | tail -n +2 | head -n -1 | awk '{print $1}' | xargs -I {} screen -S {} -X quit"
+
+
+#	#########################################
+#	Other useful, convenient and cool aliases
+
+alias gs="git status"
+alias ga="git add"
+alias gc="git commit -m"
+alias gp="git push"
+
+## Shortcut for weather (can specify the city, default is defined by locale)
+alias weather="curl wttr.in"
+
+
+#	#######
+#	Scripts
+
+# Shortcuts for scripts
+## Open chosen manual through dmenu and zathura
+#alias manuals="sh $HOME/.scripts/manuals"
+
+### Shutdown/reboot script
+#alias sd="sh $HOME/.scripts/shutdown"
+#alias rb="sh $HOME/.scripts/reboot"
+#
+### Getting key mappings script using xev.
+#alias keys="sh $HOME/.scripts/keys"
+#
+### Open pdf in zathura.
+#### The r stands for recursive, meaning one can open pdf-s in the subfolders aswell.
+#alias zpdf="sh $HOME/.scripts/zpdf"
+#alias zpdfr="sh $HOME/.scripts/zpdfR"
+#
+#
+### Download videos/music using youtube-dl
+#alias dl_vid="sh $HOME/.scripts/dl_videos"
+#alias dl_music="sh $HOME/.scripts/dl_music"
+#
+### Select video to watch
+#alias mvid="sh $HOME/.scripts/mvid"
+#alias mvidr="sh $HOME/.scripts/mvidR"
+#
+### Shortcut to open new terminal in the same path.
+#alias o="sh $HOME/.scripts/new_cur_term"
+
+

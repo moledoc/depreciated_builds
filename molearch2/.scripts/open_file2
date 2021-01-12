@@ -1,0 +1,41 @@
+#!/bin/zsh
+
+# Script to open dir/file using fzf.
+# Additional, give $1 as a starting path, 
+# default is $HOME (ie when $1 is empty).
+# Eg. use with floating_app script.
+
+# DEPENDENCIES: 
+# * fzf, rg, fd
+# * env variables for different program types.
+
+# $1 is filetype. If it's empty, all filetypes are used.
+# $2 is directory. If it's empty, $HOME is used.
+
+exclude=".git|.mozilla|.cache|.npm|.cargo|.ghc|.stack|.local|.pki|.pylint.d|ipython|.jupyter" 
+
+if [[ -n $1 ]]
+then
+  fd_type="--type"
+else
+  fd_type=""
+fi
+
+# +i is case insensitive
+open=$(fd --hidden $fd_type $1 . $2 | rg -v $exclude | fzf +i)
+
+if [[ -d "$open" ]]
+then
+  cd "$open"
+elif [[ -n $(echo $open | rg ".pdf") ]]
+then
+	eval $(echo "$READER $open")
+elif [[ -n $(echo $open | rg ".jpg|.jpeg|.png") ]]
+then
+	eval $(echo "$IMAGES $open")
+elif [[ -n $(echo $open | rg ".mp3|.mp4") ]] 
+then
+	eval $(echo "$MEDIA $open")
+else
+	eval $(echo "$EDITOR $open")
+fi

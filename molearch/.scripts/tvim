@@ -1,0 +1,43 @@
+#!/bin/sh
+# vim+screen+(R,Rmd,Python)
+# Commands run in vim are sent to the screen sessionname.
+# It is necessary to have the following rows in vimrc.
+#map <C-\> "kyy:echo system("screen -S $(ls -R /run/screens/ | tain -n 1) -X stuff ".escape(shellescape(@k),"$"))<CR>jh
+#vmap <C-\> "xy:echo system("screen -S $(ls -R /run/screens/ | tain -n 1) -X stuff ".escape(shellescape(@x."\n"),"$"))<CR>jh
+
+# Check what is the file extension, that we want to edit.
+# Open the corresponding terminal for the program we want to edit
+# in a new screen instance in new $TERMINAL
+# Open the file we want to edit in vim.
+
+
+# TODO: If it's a Rmd document, then ask what terminal to open. In theory one can run py chunks in Rmd (package reticulate helps).
+
+RUN=''
+#EXT="$(echo $1 | sed 's/[^.]*\.//g' | awk '{print toupper($0)}')"
+# This is more efficient.
+EXT=$(echo ${1##*\.} | tr '[a-z]' '[A-Z]')
+if [ $EXT = 'PY' ]
+then
+	RUN='python'
+elif [ $EXT = 'R' ] || [ $EXT = 'RMD' ]
+then
+	RUN='R --no-save'
+#else
+#	 #echo "Unsupported file format."  && exit
+fi
+
+# If we want to run python or R/Rmd, open a terminal as well.
+if [ "$RUN" != '' ]
+then
+	$TERMINAL_EXEC screen $RUN &
+fi
+
+$EDITOR $1
+
+#cleanscreen, we opened a screen instance (just in case).
+if [ "$RUN" != "" ]
+then
+	screen -ls | tail -n +2 | head -n -1 | awk '{print $1}'| xargs -I {} screen -S {} -X quit
+fi
+

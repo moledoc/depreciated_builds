@@ -1,0 +1,252 @@
+#
+# wm independent hotkeys
+#
+
+# terminal emulator
+super + Return
+	$TERM
+
+## terminal emulator straigt to terminal filemanager (eg nnn)
+#alt + Return
+#	$TERMINAL $FILEMANAGER
+
+# program launcher
+super + @space
+	dmenu_run -fn 'Hermit-Regular' -nb '#282828' -nf '#fabd2f' -sb '#b8bb26' -sf '#000000'
+
+# make sxhkd reload its configuration files:
+super + Escape
+	pkill -USR1 -x sxhkd
+
+#
+# bspwm hotkeys
+#
+
+# quit/restart bspwm
+super + alt + {q,r}
+	bspc {quit,wm -r}
+
+# close and kill
+super + {_,shift + }w
+	bspc node -{c,k}
+
+# alternate between the tiled and monocle layout
+super + m
+	bspc desktop -l next
+
+# send the newest marked node to the newest preselected node
+super + y
+	bspc node newest.marked.local -n newest.!automatic.local
+
+# swap the current node and the biggest node
+super + g
+	bspc node -s biggest
+
+#
+# state/flags
+#
+
+# set the window state
+super + {t,shift + t,s,f}
+	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+
+# set the node flags
+super + ctrl + {m,x,y,z}
+	bspc node -g {marked,locked,sticky,private}
+
+#
+# focus/swap
+#
+
+# focus the node in the given direction
+super + {_,shift + }{h,j,k,l}
+	bspc node -{f,s} {west,south,north,east}
+
+# focus the node for the given path jump
+super + {p,b,comma,period}
+	bspc node -f @{parent,brother,first,second}
+
+# focus the next/previous node in the current desktop
+super + {_,shift + }c
+	bspc node -f {next,prev}.local
+
+# focus the next/previous desktop in the current monitor
+super + bracket{left,right}
+	bspc desktop -f {prev,next}.local
+
+# focus the last node/desktop
+super + {grave,Tab}
+	bspc {node,desktop} -f last
+
+# focus the older or newer node in the focus history
+super + {o,i}
+	bspc wm -h off; \
+	bspc node {older,newer} -f; \
+	bspc wm -h on
+
+# focus or send to the given desktop in current monitor.
+super + {_,shift + }{1-9,0}
+	bspc {desktop -f,node -d} '{1-9,10}' #.'local'
+
+# Focus the other monitor at the given desktop.
+ctrl + {_,shift + }{1-9,0}
+	bspc {desktop -f,node -d} '{1-9,10}'.'!local'
+
+
+#
+# preselect
+#
+
+# preselect the direction
+super + ctrl + {h,j,k,l}
+	bspc node -p {west,south,north,east}
+
+# preselect the ratio
+super + ctrl + {1-9}
+	bspc node -o 0.{1-9}
+
+# cancel the preselection for the focused node
+super + ctrl + space
+	bspc node -p cancel
+
+# cancel the preselection for the focused desktop
+super + ctrl + shift + space
+	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+#
+# move/resize
+#
+
+# expand a window by moving one of its side outward
+super + alt + {h,j,k,l}
+	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# contract a window by moving one of its side inward
+super + alt + shift + {h,j,k,l}
+	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+
+# move a floating window
+super + {Left,Down,Up,Right}
+	bspc node -v {-20 0,0 20,0 -20,20 0}
+
+#####################
+# Self added comments
+#####################
+
+# super + Left_Mouse_Button movest the selected window around (in floating mode).
+# super + Middle_Mouse_Button resizes left-right or up-down.
+# super + Right_Mouse_Button resizes left-right and up-down.
+
+# ##########
+# Self added
+# ##########
+
+# Open browser
+super + alt + b
+	$(echo $BROWSER) #firefox --private-window
+
+# Random wallpaper from $HOME/Pictures
+super + ctrl + w
+	nitrogen --set-zoom-fill --random $HOME/Pictures
+
+## Lock screen
+#super alt + l
+#	$(echo $LOCK) #slock
+
+# Sleep
+# TODO: Can map the wanted key + run screenlock
+# this way it's simpler to set up.
+# ofc it's good to keep the sys setup documentation (note for self)
+
+# Screenshots the screen,
+# names the file with the date and time
+# and saves it to $HOME/Pictures/Screenshots
+
+## Allows to select the area
+#alt + Print
+#	scrot  -s '%Y-%m-%d_%H%M%S.png' -e 'mv $f ~/Pictures/Screenshots'
+## Screenshots the whole screen
+#Print
+#	scrot '%Y-%m-%d_%H%M%S.png' -e 'mv $f ~/Pictures/Screenshots'
+
+# Volume
+XF86AudioMute
+	$HOME/.scripts/volumecontrol mute
+super + plus
+	$HOME/.scripts/volumecontrol mute
+
+XF86AudioRaiseVolume
+	$HOME/.scripts/volumecontrol +
+super + equal
+	$HOME/.scripts/volumecontrol +
+
+XF86AudioLowerVolume
+	$HOME/.scripts/volumecontrol -
+super + minus
+	$HOME/.scripts/volumecontrol -
+
+# Brightness
+super + ctrl + Up
+	$HOME/.scripts/brightnesscontrol +
+
+super + ctrl + Down
+	$HOME/.scripts/brightnesscontrol -
+	
+# Keybindings
+F1
+	$TERM $HOME/.scripts/help
+
+
+# TODO:
+# ###########
+# Map scripts
+
+#alt + Return
+#	sh ~/.scripts/new_cur_term
+#
+## Run manuals
+#alt + F1
+#	sh ~/.scripts/manuals
+#
+## Run todo
+#alt + F2
+#	sh ~/.scripts/todo
+#
+## Run redshift
+#alt + F3
+#	sh ~/.scripts/set_redshift
+#
+## Run pdf open script
+#alt + F4
+#	sh ~/.scripts/zpdfR
+#
+## Run video open script
+#alt + shift + F4
+#	sh ~/.scripts/mvidR
+#
+## Shutdown
+#ctrl + F1
+#	sh ~/.scripts/shutdown
+#
+## Reboot
+#ctrl + F2
+#	sh ~/.scripts/reboot
+#
+## Semi GUI wifi menu
+## ctrl + F5
+#
+## kill screencast
+#alt + F12
+#	sh ~/.scripts/screencast
+#
+## Print keybindings using F1
+#F1
+#	$TERMINAL help
+#
+## Mount drive
+#alt + F9
+#	mounting
+#
+## Unmount drive
+#alt + F10
+#	unmounting

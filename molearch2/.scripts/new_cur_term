@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Open new terminal in the current path
+if [[ -n $1 ]]
+then
+  path="$1"
+else
+  path=$PWD
+fi
+cd $path
+$TERM &

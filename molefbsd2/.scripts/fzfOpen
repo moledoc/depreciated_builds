@@ -1,0 +1,7 @@
+#!/usr/local/bin/zsh
+
+# README: Run launcher using fzf, similar to dmenu and rofi
+
+$TERM -e "fzf $* < /proc/$$/fd/0 > /proc/$$/fd/1"
+
+

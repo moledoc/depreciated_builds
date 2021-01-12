@@ -1,0 +1,18 @@
+#!/bin/sh
+# Script for mounting drives.
+# The default is $HOME/Documents/Mounts.
+# If there is ever need to mount to anywhere else, 
+# then the path to the mountpoint can be typed out.
+
+MOUNT=$(lsblk -lp | grep "part $" | awk '{print $1,$4}' | dmenu -l 3 -i -p "Select drive to mount:" | awk '{print $1}') 
+# When user didn't select any drive, exit.
+if [ -z $MOUNT ]
+then 
+	exit
+fi
+#sudo mount $MOUNT && exit 0
+MOUNTPOINT=$(echo "$HOME/Documents/Mounts")
+WHERE=$(echo "$MOUNTPOINT" | dmenu -i -p "Type mountpoint:")
+[ -d $WHERE ] || echo "Creating directory $WHERE" && mkdir -p $WHERE
+echo "Mounting $MOUNT to $WHERE."
+sudo mount $MOUNT $WHERE && notify-send "Mounting $MOUNT to $WHERE."

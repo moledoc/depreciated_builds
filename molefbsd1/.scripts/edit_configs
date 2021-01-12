@@ -1,0 +1,14 @@
+#!/usr/local/bin/zsh
+
+# Dependencies: dmenu
+
+ls -ARd \
+	$HOME/.scripts/* \
+	$HOME/.config/nvim/init.vim \
+	$HOME/.config/X/.* \
+	$HOME/.config/bspwm/* \
+	$HOME/.config/sxhkd/* \
+	$HOME/.config/zsh/.* \
+	| sed '/^[[:space:]]*$/d' \
+	| dmenu -i -l 10  -fn "Hermit-Regular" -nb '#282828' -nf '#fabd2f' -sb '#b8bb26' -sf '#000000' \
+	| xargs -r $TERM -e $EDITOR 

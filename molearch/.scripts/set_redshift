@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Set redshift value using dmenu
+
+echo "Type redshift value" | dmenu | xargs -I {} redshift -P -O "{}"

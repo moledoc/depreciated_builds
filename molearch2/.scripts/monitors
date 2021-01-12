@@ -1,0 +1,18 @@
+#!/bin/sh
+intern=eDP1
+extern=HDMI1
+
+# Script to put screen to the left of laptop screen,
+# when there is a VGA1 monitor attached.
+# If there is not a monitor attached, 
+# then only output to laptop monitor (LVDS1)
+
+STATUS=$(< /sys/class/drm/card0-HDMI-A-1/status)
+# STATUS=$(xrandr | grep "$extern connected")
+#--output "$intern" --auto 
+#xrandr --output "$extern" --off 
+[ $STATUS='connected' ] \
+	&& xrandr --output "$intern" --auto --output "$extern" --auto --left-of "$intern" \
+	|| xrandr --output "$intern" --primary --auto --output "$extern" --off \
+	& bspc wm -r
+

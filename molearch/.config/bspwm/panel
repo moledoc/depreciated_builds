@@ -1,0 +1,142 @@
+#!/bin/sh
+
+# Written by Meelis Utt
+# It does not use PANEL_FIFO.
+# It seems that most use that,
+# however it seems to me,
+# that atm I can do it my (wrong?) way.
+
+# Kill previous panel
+pkill -ox -9 lemonbar 
+
+# Define colors
+ok_col=00E600
+semi_ok_col=FFFF00
+not_ok_col=FF0000
+
+# Check if monitor connected (currently a VGA1 monitor.
+# Maybe someday I generalize the solution.
+is_connected=$(< /sys/class/drm/card0-VGA-1/status)
+external=$(bspc wm -g | grep -o 'VGA1[^:]*' | sed 's/WM\|Wm//g')
+internal=$(bspc wm -g | grep -o 'LVDS1[^:]*' | sed 's/:M\|:m//g')
+
+# Title
+#Title='MoleArch'
+
+# Date and time
+## Define the clock
+Clock() {
+	DATETIME=$(date "+%a %Y-%m-%d, %T")
+	#Fcol=747CE6
+	# echo -n "%{F#$ok_col}%{B-}$DATETIME%{F-}%{B-}"
+	echo "$DATETIME"
+}
+
+# Battery
+## Define battery
+Battery() {
+
+	# # Get the battery percentage
+	# BATPERC=$(acpi --battery | cut -d, -f2 | sed "s/ //g;s/\%//g")
+	 
+	# # Find, if the battery is being charged or not.
+	# STATE=$(acpi --battery | cut -d, -f1 | grep -o ':.*' |  sed "s/: //")
+
+	# Get battery percentage and status (charging or not).
+	BATPERC=$(< /sys/class/power_supply/BAT0/capacity)
+	STATE=$(< /sys/class/power_supply/BAT0/status)
+
+	# If battery is being charged, then make a mark.
+	[ $STATE = 'Charging' ] && STATE='<-' || STATE=''
+
+	# Define battery color based on the percentage.
+
+	COL=$semi_ok_col
+	[ "$(($BATPERC < 25))" = 1 ] && COL=$not_ok_col
+	[ "$(($BATPERC > 50))" = 1 ] && COL=$ok_col
+	# [ $(($BATPERC > 50 & $BATPERC > 25 )) != 1 ] && COL=$semi_ok_col
+
+	echo "%{F#$COL}%{B-}$BATPERC% $STATE"
+}
+
+# Desktops
+
+# Open and active desktop colors (grey and red)
+col_open=555555
+col_active=FF0000
+
+Desktop() {
+	# Define active and open desktop colors
+	#monitor=$(bspc wm -g | grep -o 'M[^:]*' | sed 's/M//g')
+	monitor=$internal
+	desktops=$(bspc wm -g | grep -o $internal'[^L]*' | sed -e "s/:O/ %{F#$col_active}%{B#$col_open} /g;s/:o/ %{F-}%{B#$col_open} /g;s/:f/ %{F-}%{B-} /g;s/:F/ %{F#$col_active}%{B-} /g" |grep -o ' [^:]*')
+	echo "$desktops %{F-}%{B-} $monitor"
+
+	#echo "$(bspc wm -g | sed -e "s/:O/ %{F#$col_active}%{B#$col_open} /g;s/:o/ %{F-}%{B#$col_open} /g;s/:f/ %{F-}%{B-} /g;s/:F/ %{F#$col_active}%{B-} /g;s/:LT:TT:G:m/ /g" ) %{F-}%{B-}" #| grep -o '%[^:]*') %{F-}%{B-}"
+}
+
+Desktop2() {
+	# Define active and open desktop colors
+	monitor=$external
+	desktops=$(bspc wm -g | grep -o $external'[^L]*' | sed -e "s/:O/ %{F#$col_active}%{B#$col_open} /g;s/:o/ %{F-}%{B#$col_open} /g;s/:f/ %{F-}%{B-} /g;s/:F/ %{F#$col_active}%{B-} /g" |grep -o ' [^:]*')
+	echo "$desktops %{F-}%{B-} $monitor"
+}
+
+
+# Connected network
+Network() {
+	# Optimize this command(?)
+	TYPE="$(nmcli -m multiline connection show --active | awk 'NR==3{print $2}')"
+	NAME="$(nmcli -m multiline connection show --active | awk 'NR==1{print $2}')"
+	STRENGTH="$(nmcli networking connectivity)"
+
+	case "$STRENGTH" in
+		full) COL=$ok_col ;;
+		limited) COL=$semi_ok_col ;;
+		none) COL=$not_ok_col ;;
+	esac
+
+	echo "%{F#$COL}$TYPE%{F-}%{B-} $NAME"
+}
+
+# Show volume
+Volume() {
+	[ $(amixer sget Master | awk 'NR==5{print $6}') = '[on]' ] \
+		&& STATUS="%{F#$ok_col}%{B-}" \
+		|| STATUS="%{F#$not_ok_col}%{B-}"
+	VOL=$(amixer sget Master | awk 'NR==5{print $4}' | sed 's/\[\|\%\]\|\]//g')
+	echo "vol $STATUS$VOL%{F-}%{B-}"
+	#echo "vol $(amixer sget Master | awk 'NR==5{print $4, $6}' | sed 's/\[\|\%\]\|\]//g')"
+}
+
+Recording() {
+	
+	REC=$(pgrep ffmpeg)
+	if [ -n "$REC" ];
+	then
+		REC="%{F#$not_ok_col}rec%{B-}"
+	fi
+	echo "$REC"
+}
+
+# Define panel block separator
+sep() {
+	echo "%{F-}%{B-} | "
+}
+
+# Pipe the panel values into lemonbar.
+panel_bar() {
+	while true; do
+		# echo "%{l}$(Desktop) %{c} "$Title" %{r} $(Clock)$(sep)$(Network)$(sep)$(Volume)$(sep)$(Battery) %{F-}%{B-}"
+
+		BAR="%{c} "$(Clock)" %{r} $(Recording)$(sep)$(Network)$(sep)$(Volume)$(sep)$(Battery) %{F-}%{B-}"
+		LVDS="%{S1} %{l}$(Desktop)$BAR"
+		[ $is_connected = 'connected' ]  && MONITOR="%{Sf} %{l}$(Desktop2)$BAR" || MONITOR=""
+
+		echo "$LVDS $MONITOR"
+
+		sleep 1
+	done
+}
+
+panel_bar | lemonbar -p

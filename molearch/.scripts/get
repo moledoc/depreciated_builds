@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# wget or curl the what's in clipboard.
+# Default is curl, wget is given with a parameter -w
+
+[ "$1" = "-w" ] && wget "$(sselp)" || curl "$(sselp)"  

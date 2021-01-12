@@ -1,0 +1,227 @@
+
+When all packages are compiled 
+(may need multiple bulk commands, since some might fail;
+running it again only runs what is not done).
+we need to make the setup,
+so we can do pkg from our poudriere repository.
+For my first successful poudriere repository I defined file a
+/usr/local/etc/pkg/repos/poudriere.conf
+and added the lines
+
+	poudriere: {
+		url:"file:///poudriere/data/packages/121Ramd64-default"
+		mirror_type: "srv",
+		signature_type: NONE,
+		enabled: yes,
+		priority: 1
+	}
+
+So the url is $BASEFS/data/packages/<jail_name>-<tree_name>.
+If not specified, <tree_name> is default.
+
+To download packages from our poudriere repository we can
+	* enable/disable /usr/local/etc/pkg/repos/poudriere.conf and
+	/etc/pkg/FreeBSD.conf accordingly;
+	* or more preferred use
+		$ doas pkg install -r <repo_name> <pkg_name>
+	According to my example, I need to use
+		$ doas pkg install -r poudriere <pkg_name>
+
+To update the poudriere ports tree use
+	
+	$ doas poudriere ports -u
+
+### What I want to do/find out
+
+	* How to set different options after poudriere is compiled the programs?
+	* set up nginx server to have web frontend for viewing status of the poudriere bulk build.
+	
+	$ doas nvim /usr/local/etc/nginx/nginx.conf
+
+	server {
+		listen 8000;
+		server_name localhost;
+		root /usr/locale/share/poudriere/html;
+
+		location /data {
+			alias $BASEFS/data/logs/bulk;
+			autoindex on;
+		}
+
+		location /packages {
+			root /usr/locale/share/poudriere/data;
+			autoindex on;
+		}
+	}
+
+## nvim
+
+Neovim config is to be located at
+
+	~/.config/nvim/init.vim
+	or $XDG_CONFIG_HOME/nvim/init.vim if defined.
+
+### Installing VimPlug
+
+	$ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+Let's make necessary directory
+
+	$ mkdir -p ~/.config/nvim/plugged
+
+Now add the line to init.vim (the line starting with 'Plug' is an example)
+
+	call plug#begin('~/.config/nvim/plugged')
+	Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
+	call plug#end()
+
+To install pluggins run inside nvim the command
+	
+	:PlugInstall
+
+## Wifi
+
+    Look for the SSID with:
+		$ doas ifconfig wlan0 scan
+    Put the ssid and password in /etc/wpa_supplicant.conf
+    Connect with the given SSID with:
+		$  doas ifconfig wlan0 SSID "the searched ssid name"
+    Restart netif service otherwise internet will not work:
+		$ doas service netif restart
+
+One other possibility:
+
+	$ doas wpa_passphrase "SSID" "WPA2key" >> /etc/wpa_supplicant.conf
+
+## Xorg
+
+Do 
+
+	$ doas X -configure
+	$ doas cp /root/xorg.conf.new /usr/local/etc/X11/xorg.conf
+
+## Mouse
+
+If mouse support was not installed during the tty phase,
+then install the following ports (also described in moleports file)
+	
+	x11-drivers/xf86-input-synaptics
+	x11-drivers/xf86-input-mouse
+
+and add the following line to /etc/rc.conf
+
+	moused_enable="YES"
+
+## Sound
+
+There is utility called mixer(8).
+To see ones device run just
+
+	$ mixer
+
+With this utility, volume and such can be changed.
+To set default mixer values,
+define the appropriate values in /boot/device.hints as
+	
+	hint.pcm.0.vol="<nr>"
+
+## Brightness
+
+Make sure one has acpi_video loaded
+	
+	$ doas kldload acpi_video
+
+If module is not automatically loaded,
+then add the following line /boot/loader.conf
+	
+	$ acpi_video_load="YES"
+
+To make it permanent add lines like
+	
+	hw.acpi.video.lcd0.economy=<nr>
+	or
+	hw.acpi.video.lcd0.fullpower=<nr>
+
+to /etc/sysctl.conf.
+To change brightness
+
+	$ doas sysctl hw.acpi.video.lcd0.brightness=<value>
+
+It's reasonable to use the command in a script and bound the script to a keybinding.
+
+## Git without inserting password (needs revision)
+
+Use git over ssh: create ssh keys with
+	$ ssh-keygen -t rsa -b 2048 -C "<email>"
+
+To start the ssh-agent, run
+	$ eval `ssh-agent`
+
+Now add the private key to ssh-agent
+	$ ssh-add $HOME/.ssh/<private-key-file>
+	( At first try, didn't succeed)
+
+Add ssh key (from $HOME/.ssh/id_rsa.pub) to bitbucket, gitlab etc (Settings -> SSH keys/Add key etc)
+Verify configuration and username with (in case with bitbucket)
+	$ ssh -T git@bitbucket.org
+
+Now to use ssh, use
+	$ git <cmd> git@<path-to-repo>
+
+## Adding fonts and making them accessible
+
+Check pkg or ports tree for the wanted fonts and install them.
+To add installed font to eg xfontsel, run
+	$ xset fp+ /usr/local/share/fonts/<font>
+	$ xset fp rehash
+To make this changes persistant,
+add the previous lines to .xinitrc.
+After adding new fonts/font directories,
+rebuild the font caches
+	$ fc-cache -f
+
+## Mounting and unmounting
+Commands 'mount' and 'umount' work.
+With ntfs fstype, one needs to install package fusefs-ntfs.
+The fuse kernel module needs to be loaded.
+To have it loaded at boot time, add following to /boot/loader.conf
+
+  fuse_load="YES"
+
+To load the module adhoc (on running system), run
+
+```sh
+doas -- kldload fuse
+#or
+sudo kldload fuse
+```
+
+Then one can mount drive/usb etc with 
+
+```sh
+doas -- ntfs-3g /dev/da0s<X> <mountpoint>
+```
+
+For other flags, check the man page.
+Unmounting can still be done with umount command.
+
+```sh
+doas -- umount <mountpoint>
+```
+
+# Notes
+
+	* Difference from GNU/Linux is that third party programs are installed/saved in /usr/local/.
+	* To shut down use 
+		$ doas shutdown -p now
+	* To check battery and other values from the terminal use
+		$ apm
+	* The number of active getty's can be changed in /etc/ttys.
+	* To change shell
+		$ chsh -s <new_shell>
+	* To change root shell
+		$ doas chsh -s <new_shell>
+	* bspwmrc needs to be executable.
+
+

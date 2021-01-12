@@ -1,0 +1,8 @@
+#!/usr/local/bin/zsh
+
+# Script to copy files to dotfiles repository
+
+cp ~/.xinitrc ~/.zshrc ~/.zprofile ~/.config/X/.Xresources ~/.config/bspwm/bspwmrc ~/.config/sxhkd/sxhkdrc ~/.config/nvim/init.vim ~/.config/zsh/.* ~/.scripts/* ~/Documents/dotfiles/ 
+
+cp ~/README.md ~/Documents/dotfiles/
+

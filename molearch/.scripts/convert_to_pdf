@@ -1,0 +1,31 @@
+#!/bin/sh
+# Convert documents to pdf
+
+#NAME=$(echo $1 | sed 's/\.[^.]*$//')
+#EXT=$(echo $1 | sed 's/^[^\.]*\.//')
+
+# The following is more efficient.
+NAME=${1%%\.*}
+EXT=${1##*\.}
+
+# groff documents
+if [ $EXT == 'ms' ] || [ $EXT == 'man' ]
+then
+	groff -e $1 -$EXT -Tpdf > $NAME.pdf
+
+# latex documents
+elif [ $EXT == 'tex' ] 
+then
+	pdflatex $1
+	# Clean directory of unnecessary files.
+	rm $NAME.aux $NAME.log $NAME.out
+
+# rmd documents
+elif [ $EXT == 'Rmd' ] || [ $EXT == 'rmd' ]
+then
+	echo "require(rmarkdown); render('$1')" | R --vanilla
+
+# In case of unknown file format, Pandoc defaults to markdown.
+else
+	pandoc $1 -o $NAME.pdf
+fi

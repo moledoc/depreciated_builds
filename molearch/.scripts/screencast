@@ -1,0 +1,29 @@
+#!/bin/sh
+# Script for screencasting.
+# Define where the video is saved.
+[[ -n $1 ]] && OUT=$1 || OUT="$HOME/out.mkv"
+
+# Find resolution
+RESO=$(xrandr -q --current | grep '*' | tail -n 1 | awk '{print $1}')
+
+# Check if already recording.
+REC=$(pgrep ffmpeg)
+
+# Check if OUT file exists. 
+# If yes, then delete.
+EXISTS=$(find $OUT)
+#[[ (-n $EXISTS) && (-z $REC) ]] && rm $OUT
+if [ -n $EXISTS ] && [ -z $REC ]
+then
+	rm $OUT
+fi
+
+# If not recording, start.
+# if recording, end.
+#[[ -z $REC ]] && ffmpeg -f alsa -i default -y -f x11grab -s $RESO -i :0.0 $OUT || pkill ffmpeg 
+if [ -z $REC ]
+then
+	ffmpeg -f alsa -i default -y -f x11grab -s $RESO -i :0.0 $OUT
+else
+	pkill ffmpeg 
+fi

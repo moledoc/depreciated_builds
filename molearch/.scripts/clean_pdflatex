@@ -1,0 +1,24 @@
+#!/bin/sh
+# Wrapper script to make pdflatex
+# and clean the directory after.
+
+#NAME=$(echo $1 | sed 's/\.[^.]*$//')
+#EXT=$(echo $1 | sed 's/^[^\.]*\.//')
+
+# The following is more efficient.
+NAME=${1%%\.*}
+EXT=${1##*\.}
+
+# Check if TeX file is given.
+if [ -z $EXT ]
+then
+	# If no file is given, delete the unnecessary files
+	rm *.aux *.log *.out && exit 0
+elif [ $EXT != 'tex' ]
+then 
+	echo "This is not a TeX file." && exit 0
+fi
+
+# Does not handle it, when references are used in TeX file.
+pdflatex $1
+rm $NAME.aux $NAME.log $NAME.out

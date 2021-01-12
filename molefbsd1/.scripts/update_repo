@@ -1,0 +1,22 @@
+#!/usr/local/bin/zsh
+
+# Script to copy the files to git repo,
+# so that my home directory is not going to get cluttered
+# and it is easier to do 'git status' and such.
+
+cp -r ~/.config/bspwm/ ~/Documents/molebsd/.config/bspwm/
+cp -r ~/.config/sxhkd/ ~/Documents/molebsd/.config/sxhkd/
+cp -r ~/.config/zsh/ ~/Documents/molebsd/.config/zsh/
+cp -r ~/.config/X/ ~/Documents/molebsd/.config/X/
+cp -r ~/.scripts ~/Documents/molebsd/
+cp ~/.config/nvim/init.vim ~/Documents/molebsd/.config/nvim/
+
+cp ~/.xinitrc ~/.zprofile ~/.zshrc ~/Documents/molebsd/
+
+cp ~/Documents/molebsd_doc.txt ~/Documents/molebsd/Documents/
+
+cp -r ~/.scripts/ ~/Documents/molebsd/.scripts
+
+#cp -r ~/.mozilla ~/Documents/molebsd/
+
+cp ~/README.md ~/Documents/molebsd/

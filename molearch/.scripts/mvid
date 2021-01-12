@@ -1,0 +1,3 @@
+#!/bin/sh
+# Script that uses dmenu to select a video from the current folder
+ls | dmenu -i -l 15 | xargs -I {} mpv "{}"

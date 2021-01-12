@@ -1,0 +1,4 @@
+#!/bin/zsh
+# Script to run an application in a floating terminal window
+bspc node -t floating
+$1

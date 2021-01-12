@@ -1,0 +1,4 @@
+#!/bin/sh
+# Use dmenu and run selected pdf in zathura
+
+ls | grep [\.]pdf | dmenu -i -l 30 | xargs -I {} zathura "{}" &

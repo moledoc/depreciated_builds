@@ -1,0 +1,60 @@
+#! /bin/sh
+
+##################
+# Autorun programs
+##################
+
+# If refreshed, remove prev rules, to prevent doubling.
+# Also, kill last sxhkd, panel instances.
+
+pkill -ox -9 sxhkd
+while [ $(pgrep -cx panel) -gt 0 ]; do
+	pkill -ox -9 panel
+done
+
+# Run panel and sxhkd
+sxhkd &
+panel &
+
+bspc rule -r "*" 
+
+###############
+# Monitor setup
+###############
+
+bspc monitor LVDS1 -d 1 2 3 4 5 6 7 8 9 0
+bspc monitor VGA1 -d 1 2 3 4 5 6 7 8 9 0
+
+# For auto detecting montior plugged/unplugged??
+# bspc subscribe monitor_add
+# bspc subscribe monitor_remove
+
+########
+# Config
+########
+
+bspc config border_width         1
+bspc config window_gap           0
+
+bspc config split_ratio          0.5
+bspc config borderless_monocle   true
+bspc config gapless_monocle      true
+
+bspc config focused_border_color	"#FF0000" # Red border 
+
+#######
+# Rules
+#######
+
+bspc rule -a firefox desktop='2.local' follow=on
+bspc rule -a surf desktop='3.local' follow=on
+bspc rule -a mpv desktop='5.local' follow=on
+bspc rule -a Sxiv state=floating
+bspc rule -a KeePassXC state=floating
+
+###  # THESE ARE KEPT AS AN EXAMPLE AT THE MOMENT.
+###  # bspc rule -a Kupfer.py focus=on
+###  # bspc rule -a Screenkey manage=off
+###  # bspc rule -a Gimp desktop='^8' state=floating follow=on
+
+

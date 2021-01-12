@@ -1,0 +1,4 @@
+#!/bin/sh
+# Download music using youtube-dl.
+# This script only downloads the audio of the given URL. Argument is given as an argument.
+youtube-dl -f bestaudio $(sselp) -i

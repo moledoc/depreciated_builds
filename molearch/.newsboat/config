@@ -1,0 +1,16 @@
+bind-key j down
+bind-key k up
+bind-key l open
+bind-key h quit
+bind-key G end
+bind-key g home
+bind-key n next-unread
+bind-key N prev-unread
+bind-key a sort
+bind-key A rev-sort
+bind-key m mark-feed-read
+
+browser linkhandler
+macro , open-in-browser
+macro v set browser "mpv"; open-in-browser ; set browser linkhandler
+macro w set browser "w3m -num -s -M -o auto_image=FALSE"; open-in-browser ; set browser linkhandler
