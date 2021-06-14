@@ -1,0 +1,20 @@
+"$TERM&"
+    m:0x40 + c:36
+    Mod4 + Return
+
+"nitrogen --set-zoom-fill --save --random $HOME/wallpapers &"
+    m:0x41 + c:25
+    Shift+Mod4 + w
+
+"$BROWSER &"
+    m:0x48 + c:56
+    Alt+Mod4 + b
+
+"$PASSWD &"
+    m:0x48 + c:33
+    Alt+Mod4 + p
+
+"killall ssh-agent&"
+    m:0x4c + c:39
+    Control+Alt+Mod4 + s
+
