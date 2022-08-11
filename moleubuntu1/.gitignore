@@ -1,0 +1,4 @@
+.seekbuf
+*.swp
+tags
+Session.vim

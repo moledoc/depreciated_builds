@@ -1,0 +1,48 @@
+{
+    "schema_version": 2,
+    "timestamp": 1647348606,
+    "workspace": {
+        "0": [
+            [
+                {
+                    "panes": [
+                        {
+                            "type": "term",
+                            "directory": "/home/utt"
+                        }
+                    ],
+                    "label": "utt@meelisutt: ~",
+                    "custom_label_set": false
+                }
+            ]
+        ],
+        "1": [
+            [
+                {
+                    "panes": [
+                        {
+                            "type": "term",
+                            "directory": "/home/utt"
+                        }
+                    ],
+                    "label": "Terminal",
+                    "custom_label_set": false
+                }
+            ]
+        ],
+        "2": [
+            [
+                {
+                    "panes": [
+                        {
+                            "type": "term",
+                            "directory": "/home/utt"
+                        }
+                    ],
+                    "label": "Terminal",
+                    "custom_label_set": false
+                }
+            ]
+        ]
+    }
+}
