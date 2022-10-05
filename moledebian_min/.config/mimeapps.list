@@ -1,0 +1,14 @@
+[Default Applications]
+application/x-shellscript=vim.desktop;
+text/plain=vim.desktop;
+text/x-go=vim.desktop;
+text/x-csrc=vim.desktop;
+audio/mpeg=mpv.desktop;
+video/mp4=mpv.desktop;
+video/x-matroska=mpv.desktop;
+video/x-msvideo=mpv.desktop;
+text/html=chromium.desktop;
+text/markdown=vim.desktop;
+text/x-chdr=vim.desktop;
+application/pdf=org.pwmt.zathura-pdf-poppler.desktop;
+audio/x-wav=mpv.desktop;

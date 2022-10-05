@@ -1,0 +1,4 @@
+12c12
+< static const int failonclear = 1;
+---
+> static const int failonclear = 0;

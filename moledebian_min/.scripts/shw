@@ -1,0 +1,13 @@
+#!/bin/sh
+# $1 search from where
+# $2 filter
+test -z "$1" && echo "incorrect first argument: expected path" && exit 1
+filter=$(test -z "$2" && echo ".*/Documents.*\|.*/Downloads.*\|.*/Music.*\|.*/Books.*\|.*/Videos.*" || echo ".*/.*$2.*")
+p=$(find $1 \
+	-regextype sed -iregex ".*/\.git.*\|.*/chromium.*" -prune \
+	-o -regextype sed -iregex "$filter" \
+	-type f\
+	-exec grep -ILv . {} \; \
+	-print | fzf)
+echo "$p"
+test "$p" && xdg-open "$p" &

@@ -1,6 +1,6 @@
 ## Synopsis
 
-Contains my old builds of Unix builds (linux and BSD).
+Contains my old builds of Unix builds (linux and BSD). Now one Windows setup also added
 
 ## Purpose
 

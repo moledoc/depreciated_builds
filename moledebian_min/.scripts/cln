@@ -1,0 +1,6 @@
+#!/bin/sh
+# script to clean git branches
+git remote prune origin
+remotes=$(git branch -rl | sed 's/. //g;s/origin\///g')
+locals=$(git branch -l | sed 's/. //g')
+comm -l -3 <(echo "$remotes") <(echo "$locals") | fzf --multi --bind 'ctrl-a:select-all' | xargs git branch -fd

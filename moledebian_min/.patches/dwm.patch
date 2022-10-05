@@ -1,0 +1,69 @@
+2c2
+< 
+---
+> #include <X11/XF86keysym.h>
+8c8
+< static const char *fonts[]          = { "monospace:size=10" };
+---
+> static const char *fonts[]          = { "Hack:pixelsize=14:antialias=true:autohint=true"};
+41a42
+> 	{ "[M]",      monocle },
+44d44
+< 	{ "[M]",      monocle },
+48c48
+< #define MODKEY Mod1Mask
+---
+> #define MODKEY Mod4Mask
+60,61c60,73
+< static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+< static const char *termcmd[]  = { "st", NULL };
+---
+> static const char *dmenucmd[]           = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+> static const char *termcmd[]            = { "st", NULL };
+> static const char *browser[]            = { "chromium", NULL };
+> static const char *update_statusbar[]   = { "update_dwmbar.sh", NULL};
+> static const char *mute[]               = { "dunstify-sound.sh", "toggle", NULL };
+> static const char *inc_vol[]            = { "dunstify-sound.sh", "5%+", NULL };
+> static const char *dec_vol[]            = { "dunstify-sound.sh", "5%-", NULL };
+> static const char *play_pause[]         = { "playerctl", "play-pause", NULL };
+> static const char *next[]               = { "playerctl", "next", NULL };
+> static const char *prev[]               = { "playerctl", "previous", NULL };
+> static const char *inc_bright[]         = { "dunstify-brightness.sh", "+", NULL };
+> static const char *dec_bright[]         = { "dunstify-brightness.sh", "-", NULL };
+> static const char *lang[]               = { "toggle-lang.sh", NULL };
+> static const char *screenlock[]         = { "slock", NULL };
+67c79
+< 	{ MODKEY,                       XK_b,      togglebar,      {0} },
+---
+> 	{ Mod1Mask,                     XK_b,      togglebar,      {0} },
+77,79c89,91
+< 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
+< 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
+< 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+---
+> 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[1]} },
+> 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[2]} },
+> 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[0]} },
+97a110,127
+> 	// self defined
+> 	{ Mod1Mask,                     XK_Tab,      focusstack,    {.i = +1 } },
+> 	{ Mod1Mask|ShiftMask,           XK_Tab,      focusstack,    {.i = -1 } },
+> 	{ MODKEY,                       XK_Shift_L,  spawn,         {.v = lang } },
+> 	{ MODKEY,                       XK_b,        spawn,         {.v = browser } },
+> 	{ MODKEY,                       XK_u,        spawn,         {.v = update_statusbar } },
+> 	{ MODKEY|ShiftMask,             XK_l,        spawn,         {.v = screenlock } },
+> 	{ 0,                XF86XK_AudioMute,        spawn,         {.v = mute } },
+> 	{ 0,                XF86XK_AudioRaiseVolume, spawn,         {.v = inc_vol } },
+> 	{ 0,                XF86XK_AudioLowerVolume, spawn,         {.v = dec_vol } },
+> 	{ 0,                XF86XK_AudioPlay,        spawn,         {.v = play_pause } },
+> 	{ 0,                XF86XK_AudioNext,        spawn,         {.v = next } },
+> 	{ 0,                XF86XK_AudioPrev,        spawn,         {.v = prev } },
+> 	{ 0|ShiftMask,      XF86XK_AudioMute,        spawn,         {.v = play_pause } },
+> 	{ 0|ShiftMask,      XF86XK_AudioRaiseVolume, spawn,         {.v = next } },
+> 	{ 0|ShiftMask,      XF86XK_AudioLowerVolume, spawn,         {.v = prev } },
+> 	{ 0,                XF86XK_MonBrightnessUp , spawn,         {.v = inc_bright } },
+> 	{ 0,                XF86XK_MonBrightnessDown,spawn,         {.v = dec_bright } },
+105c135
+< 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
+---
+> 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[0]} },

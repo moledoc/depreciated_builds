@@ -1,0 +1,4 @@
+#!/bin/sh
+# switch branch
+b=$(git branch -al | fzf | sed 's/. //g;s/remotes\/origin\///g')
+test $b && git checkout $b

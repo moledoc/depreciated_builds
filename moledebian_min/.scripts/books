@@ -1,0 +1,5 @@
+#!/bin/sh
+p="$HOME/Books"
+selected=$(ls "$p" | dmenu -p "Pick a book you want to open: " -i)
+test -z "$selected" && exit 0
+zathura "$p/$selected" &

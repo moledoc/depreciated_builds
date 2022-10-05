@@ -1,0 +1,15 @@
+#!/bin/sh
+p="$HOME"
+t=$(printf "Music\nVideos" | dmenu -p "Pick media type" -i)
+p="$p/$t"
+while $(test -d "$p")
+do 
+	selected=$(ls "$p" | dmenu -p "Pick what you want to play (add '*' to end to play dir; type '<' to go back): " -i)
+	test "$selected" = "<" && p="$(echo "$p" | sed 's,/*[^/]\+/*$,,')" && continue
+	test -z "$selected" && exit 0
+	p="$p/$selected"
+	is_break=$(printf "$p" | grep -o --color=none "*$")
+	test "$is_break)" = "*" && break
+done
+p="$(printf "$p" | sed -e 's/\*.*$//;s/[[:space:]]*$//')" 
+mpv "$p" &

@@ -1,0 +1,61 @@
+8c8,9
+< static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
+---
+> 
+> static char *font = "Hack:pixelsize=14:antialias=true:autohint=true";
+94c95
+< unsigned int tabspaces = 8;
+---
+> unsigned int tabspaces = 4;
+99,106c100,107
+< 	"black",
+< 	"red3",
+< 	"green3",
+< 	"yellow3",
+< 	"blue2",
+< 	"magenta3",
+< 	"cyan3",
+< 	"gray90",
+---
+> 	"#171421",
+> 	"#C01C28",
+> 	"#26A269",
+> 	"#A2734C",
+> 	"#12488B",
+> 	"#A347BA",
+> 	"#2AA1B3",
+> 	"#D0CFCC",
+109,116c110,117
+< 	"gray50",
+< 	"red",
+< 	"green",
+< 	"yellow",
+< 	"#5c5cff",
+< 	"magenta",
+< 	"cyan",
+< 	"white",
+---
+> 	"#5E5C64",
+> 	"#F66151",
+> 	"#33D17A",
+> 	"#E9AD0C",
+> 	"#2A7BDE",
+> 	"#C061CB",
+> 	"#33C7DE",
+> 	"#FFFFFF",
+123,124c124,125
+< 	"gray90", /* default foreground colour */
+< 	"black", /* default background colour */
+---
+> 	"#171421", /* default foreground colour */
+> 	"#FFFFFF", /* default background colour */
+187c188
+< #define MODKEY Mod1Mask
+---
+> #define MODKEY Mod4Mask
+196,197c197,198
+< 	{ TERMMOD,              XK_Prior,       zoom,           {.f = +1} },
+< 	{ TERMMOD,              XK_Next,        zoom,           {.f = -1} },
+---
+> 	{ TERMMOD,              XK_plus,        zoom,           {.f = +1} },
+> 	{ TERMMOD,              XK_underscore,  zoom,           {.f = -1} },
